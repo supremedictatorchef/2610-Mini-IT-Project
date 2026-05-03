@@ -88,4 +88,25 @@ Route::get('/clubs', [ClubController::class, 'list'])->name('clubs.index');
     Route::delete('/clubs/{club}/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
 
 
-require __DIR__ . '/auth.php';
+// Routes for creating club
+Route::resource('clubs', ClubController::class)->except(['create', 'store']);
+
+// Nested post routes under clubs (create + store)
+Route::get('/create-clubs', [ClubController::class, 'create'])->name('create-clubs.create');
+Route::post('/create-clubs', [ClubController::class, 'store'])->name('create-clubs.store');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

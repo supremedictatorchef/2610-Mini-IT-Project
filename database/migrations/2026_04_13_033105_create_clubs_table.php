@@ -22,6 +22,7 @@ return new class extends Migration
             $table->softDeletes();  // softDeletes also in Models\Club to avoid club owner accidentally delete the 
                                     // club including the post and member
             $table->timestamps();
+            $table->string('profile_picture');
         });
     }
 
