@@ -93,7 +93,7 @@ class ClubController extends Controller
 
         // AUTHORIZATION
         // Checks if the logged-in user is a committee member of THIS specific club
-        if (!$club->members()->where('user_id', auth()::id())->where('role', 'committee')->exists()) {
+        if (!$club->members()->where('user_id', auth()->id())->where('role', 'committee')->exists()) {
             abort(403, 'Unauthorized: Only committee members can post updates.');
         }
 
