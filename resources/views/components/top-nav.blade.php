@@ -21,7 +21,7 @@
 
     <!-- Right side links -->
     <ul class="right-side-nav">
-        <div class="underline"></div>
+
         @if (Route::has('login'))
         @auth
         <a href="{{ url('/dashboard') }}"><li>Profile</li></a>
@@ -43,7 +43,5 @@
             
         @endauth
         @endif
-        
-        <div class="underline"></div>
     </ul>
 </div>

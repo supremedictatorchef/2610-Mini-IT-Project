@@ -155,17 +155,12 @@ class ClubController extends Controller
                  ->paginate(10);
     return view('clubs.search', compact('clubs','query'));
 }   
-    
-}
 
-public function index()
-    {
-
-        $clubs = Club::all(); // Better than empty logic
-        return view('navigation', compact('clubs'));
-    }
-
-    public function create(\App\Models\Club $club)
+ public function create(Club $club)
     {
       return view('create-clubs.create', compact('club'));
     }
+
+    
+}
+
