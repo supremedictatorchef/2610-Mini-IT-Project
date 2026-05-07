@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MMU's Club & Society</title>
 </head>
+<x-top-nav></x-top-nav>
 <body>
     <h1>WELCOME TO MMU's CLUB & SOCIETY OFFICIAL WEBPAGE</h1>
     

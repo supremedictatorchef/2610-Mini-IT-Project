@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Club;
+use App\Models\Post;
 use App\Enums\ClubRole;
 use App\Notifications\ClubNotification;
 use Illuminate\Http\Request;
@@ -57,9 +58,50 @@ class ClubController extends Controller
                          ->with('status', 'Notification sent to ' . ($members->count() - 1) . ' members!');
     }
 
+    // Temporary store function as we figure out how to reroute things
+
+    public function store(Request $request,  \App\Models\Club $clubs)
+    {
+
+        
+
+        $validated = $request->validate([
+        'name'   => 'required|string|max:255',
+        'category' => 'required',
+        'profile_picture'   => 'required|image|max:2048',
+        
+        
+          ]);
+          
+
+        if ($request->hasFile('profile_picture')) {
+        $validated['profile_picture'] = $request->file('profile_picture')->store('clubs', 'public');
+         }
+        else{
+            $profile_picture = "images/1.png";
+        }
+
+        $validated['owner_id'] = Auth::id();
+
+        Club::create($validated);
+
+        return redirect()->route('navigation')
+                        ->with('success', 'Club created successfully!');
+
+        
+    }
+
     public function index()
     {
+
         $clubs = Club::all(); // Better than empty logic
-        return view('welcome', compact('clubs'));
+        return view('navigation', compact('clubs'));
     }
+
+    public function create(\App\Models\Club $club)
+    {
+      return view('create-clubs.create', compact('club'));
+    }
+
+
 }
