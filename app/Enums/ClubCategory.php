@@ -25,4 +25,3 @@ enum ClubCategory: string
         };
     }
 }
-

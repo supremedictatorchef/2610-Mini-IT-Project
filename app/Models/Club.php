@@ -89,5 +89,3 @@ class Club extends Model
         return !is_null($this->owner_id);
     }
 }
-
-

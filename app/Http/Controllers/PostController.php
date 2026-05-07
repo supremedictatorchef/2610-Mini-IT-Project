@@ -15,7 +15,6 @@ class PostController extends Controller
     return view('welcome', compact('posts'));
 }
 
-
     public function create(Club $club)
     {
         return view('posts.create', compact('club'));

@@ -1,11 +1,12 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClubController;
-use App\Http\Controllers\PostController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Models\Event;
-use Illuminate\Support\Facades\Route;
 
 
 /*
@@ -42,8 +43,7 @@ Route::delete('/clubs/{club}/unfollow', [UserController::class, 'unfollowClub'])
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
-
-    // Dashboard – shows profile + followed clubs/events
+    // Dashboard - shows profile + followed clubs/events
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
     Route::patch('/dashboard', [UserController::class, 'updateProfile'])->name('dashboard.update');
 

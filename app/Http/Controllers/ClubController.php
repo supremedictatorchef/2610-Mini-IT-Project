@@ -18,7 +18,7 @@ class ClubController extends Controller
         $clubs = Club::with('posts')->get();
         $posts = Post::with('club')->latest()->get();
 
-        return view('index', compact('clubs', 'posts'));
+        return view('navigation', compact('clubs', 'posts'));
     }
 
     // Navigation/list view

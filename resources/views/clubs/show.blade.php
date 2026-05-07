@@ -100,4 +100,3 @@
         <p class="text-center">No events yet for this club.</p>
     @endif
 @endsection
-

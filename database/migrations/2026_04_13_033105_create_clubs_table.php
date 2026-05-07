@@ -25,7 +25,6 @@ return new class extends Migration
 
             $table->softDeletes();
             $table->timestamps();
-            $table->string('profile_picture')->default('images/1.png');
         });
     }
 
