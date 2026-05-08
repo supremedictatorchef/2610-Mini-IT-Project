@@ -52,20 +52,18 @@ class EventController extends Controller
     }
 
     
-    public function update(Request $request, Club $club, Event $event)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'date'  => 'required|date',
-            'time'  => 'required',
-            'description' => 'nullable|string',
-        ]);
+   public function update(Request $request, Club $club, Event $event)
+{
+    $event->update($request->only([
+        'title','description','date','time','location','is_passed'
+    ]));
 
-        $event->update($validated);
+    return redirect()->route('clubs.show', $club->id)
+                     ->with('success', 'Event updated successfully.');
+}
 
-        return redirect()->route('clubs.show', $club->id)
-                         ->with('success', 'Event updated successfully!');
-    }
+
+
 
     public function destroy(Club $club, Event $event)
     {

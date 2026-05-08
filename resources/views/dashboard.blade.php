@@ -1,16 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<x-top-nav />
-
 <style>
-    /* 🔹 Shared Dashboard + Profile Styles */
-    header {
-        padding: 8px 0;
-    }
-
     main {
-        padding-top: 100px; /* push content below fixed header */
+        padding-top: 20px; /* reduced so content sits closer to nav */
     }
 
     .club-card,
@@ -40,10 +33,9 @@
         background: #1e40af;
     }
 
-    /* 🔹 Profile Card Styles */
     .profile-container {
         max-width: 600px;
-        margin: 120px auto 40px; /* push down below fixed header */
+        margin: 10px auto; /* reduced margin so it sits higher */
         background: grey;
         border-radius: 10px;
         padding: 30px;
@@ -74,12 +66,8 @@
         border: 1px solid #ccc;
     }
     .profile-container .btn {
-        display: inline-block;
         background: #2563eb;
-        color: #fff;
         padding: 10px 18px;
-        border-radius: 6px;
-        text-decoration: none;
         margin: 5px;
     }
     .profile-container .btn:hover {
@@ -91,37 +79,29 @@
     .logout-btn:hover {
         background: #b91c1c;
     }
+
+    .sub-header {
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        margin-top:10px;   /* sits closer to nav */
+        margin-bottom:15px;
+    }
+    .sub-header h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        margin:0;
+    }
 </style>
 
 <div class="min-h-screen bg-gray-100 flex flex-col">
-    <!-- Top Navigation with Profile Info -->
-    <header class="bg-blue-600 text-white shadow-md fixed top-0 left-0 w-full z-50">
-        <div class="max-w-6xl mx-auto flex justify-between items-center px-6">
-            <!-- Left: Navigation -->
-            <nav class="space-x-6">
-                <a href="{{ route('home') }}">Home</a>
-                <a href="{{ route('dashboard') }}">Dashboard</a>
-                <a href="{{ route('clubs.index') }}">Clubs</a>
-                <a href="{{ route('calendar.index') }}">Calendar</a>
-            </nav>
 
-            <!-- Right: Profile Info + Logout -->
-            <div class="flex items-center space-x-4">
-                <div class="text-right">
-                    <h1 class="text-lg font-bold">{{ Auth::user()->name }}</h1>
-                    <p class="text-sm">{{ Auth::user()->email }}</p>
-                </div>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                        Log Out
-                    </button>
-                </form>
-            </div>
-        </div>
-    </header>
+    <!-- Sub-header -->
+    <div class="sub-header">
+        <h1>Your Profile</h1>
+    </div>
 
-    <!-- Profile Card with Inline Edit -->
+    <!-- Profile Card -->
     <div class="profile-container">
         <img src="{{ Auth::user()->profile_picture 
                      ? asset('storage/' . Auth::user()->profile_picture) 
@@ -172,26 +152,29 @@
                 </div>
             </section>
 
-            <!-- Events Section -->
-            <section>
-                <h2 class="text-xl font-bold mb-4">Your Events</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @forelse($events as $event)
-                        <div class="event-card">
-                            <h3 class="text-xl font-bold">{{ $event->title }}</h3>
-                            <p class="text-gray-600">
-                                {{ \Carbon\Carbon::parse($event->date)->format('d M Y') }}
-                                @if($event->time) at {{ $event->time }} @endif
-                            </p>
-                            <p class="text-gray-500">{{ $event->location ?? 'No location set' }}</p>
-                        </div>
-                    @empty
-                        <div class="event-card text-gray-600">
-                            <p>No events yet. Future events will appear here.</p>
-                        </div>
-                    @endforelse
-                </div>
-            </section>
+          <!-- Events Section -->
+<section>
+    <h2 class="text-xl font-bold mb-4">Your Events</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @forelse($events as $event)
+            <div class="event-sticker 
+                {{ \Carbon\Carbon::parse($event->date)->isPast() && !\Carbon\Carbon::parse($event->date)->isToday() 
+                    ? 'event-passed' 
+                    : 'event-upcoming' }}">
+                <h3 class="text-xl font-bold">{{ $event->title }}</h3>
+                <p class="text-gray-600">
+                    {{ \Carbon\Carbon::parse($event->date)->format('d M Y') }}
+                    @if($event->time) at {{ $event->time }} @endif
+                </p>
+                <p class="text-gray-500">{{ $event->location ?? 'No location set' }}</p>
+            </div>
+        @empty
+            <div class="event-sticker event-upcoming text-gray-600">
+                <p>No events yet. Future events will appear here.</p>
+            </div>
+        @endforelse
+    </div>
+</section>
 
         </div>
     </main>

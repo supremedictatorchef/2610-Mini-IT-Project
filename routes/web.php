@@ -25,9 +25,11 @@ Route::get('/clubs/search', [ClubController::class, 'search'])->name('clubs.sear
 // Navigation and Public Calendar
 Route::get('/navigation', [ClubController::class, 'index'])->name('navigation');
 Route::get('/calendar', function () {
-    $events = Event::all();
+    $events = Event::all(); 
     return view('calendar.index', compact('events'));
 })->name('calendar.index');
+
+
 
 // Club Details and Listing
 Route::get('/clubs', [ClubController::class, 'list'])->name('clubs.index');
@@ -67,6 +69,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/clubs/{club}/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
     Route::put('/clubs/{club}/events/{event}', [EventController::class, 'update'])->name('events.update');
     Route::delete('/clubs/{club}/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+    Route::patch('/clubs/{club}/events/{event}/passed', [EventController::class, 'markPassed'])
+    ->name('events.markPassed');
+
+
 });
 
 
