@@ -152,6 +152,7 @@
                 </div>
             </section>
 
+            
           <!-- Events Section -->
 <section>
     <h2 class="text-xl font-bold mb-4">Your Events</h2>

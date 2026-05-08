@@ -40,4 +40,3 @@
    @endforeach
 </body>
 </html>
-

@@ -56,6 +56,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function getEventsAttribute()
+  
     {
         return $this->clubs()->with('events')->get()->pluck('events')->flatten();
     }

@@ -38,6 +38,7 @@
     </div>
 @endsection
 
+
 @push('scripts')
 <script>
     // Debug: log events to console

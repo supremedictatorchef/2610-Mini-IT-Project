@@ -101,6 +101,7 @@
                        value="{{ old('email', Auth::user()->email) }}">
             </div>
 
+            
             <!-- Profile Picture -->
             <div class="form-group">
                 <label for="profile_picture">Profile Picture</label>
