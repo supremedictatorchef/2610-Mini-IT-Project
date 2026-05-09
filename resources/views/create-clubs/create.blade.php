@@ -1,8 +1,10 @@
-@extends('layouts.app')
-
+<!DOCTYPE html>
+<html>
+<head>
 <link rel="stylesheet" href="{{ asset('css/create-clubs.css') }}">
+</head>
 
-@section('content')
+<body>
 <div >
     <h2 id = "create-club-h2">Create Club</h2>
     <p>Fill in the details below</p>
@@ -44,7 +46,9 @@
 
 </div>
 </div>
-@endsection
+</body>
+</html>
+
 
 
 
