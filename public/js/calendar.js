@@ -83,15 +83,19 @@ function renderCalendar(dateObj) {
     }
 }
 
-// Initial render
-renderCalendar(currentDate);
+// Initial render after DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+    renderCalendar(currentDate);
 
-// Navigation
-document.getElementById("prevMonth").addEventListener("click", () => {
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    renderCalendar(currentDate);
+    // Navigation
+    document.getElementById("prevMonth").addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar(currentDate);
+    });
+
+    document.getElementById("nextMonth").addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar(currentDate);
+    });
 });
-document.getElementById("nextMonth").addEventListener("click", () => {
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    renderCalendar(currentDate);
-});
+

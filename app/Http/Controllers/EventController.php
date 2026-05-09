@@ -21,6 +21,11 @@ class EventController extends Controller
         }
     }
 
+    public function index() {
+    $events = Event::all(); // or your query
+    return view('calendar.index', compact('events'));
+}
+
     /**
      * Display a specific event.
      * Authorization not required (any member/visitor can view).
