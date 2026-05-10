@@ -1,8 +1,26 @@
-@extends('layouts.app')
+<x-top-nav>
+</x-top-nav>
 
-<link rel="stylesheet" href="{{ asset('css/create-clubs.css') }}">
+<!DOCTYPE html>
+<html>
+<head>
+     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Clubd</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/create-clubs.css') }}">
+</head>
 
-@section('content')
+<header>
+    <img src="{{ asset('images/csrw-placeholder-2.jpeg') }}" 
+         style="width:100%; height:200px; object-fit:cover;">
+    <h1>Want to Introduce a new club to MMU?</h1>
+   </header>
+
+
+<body>
 <div >
     <h2 id = "create-club-h2">Create Club</h2>
     <p>Fill in the details below</p>
@@ -11,22 +29,22 @@
     <form action="{{ route('create-clubs.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
-        <div class="form-group">
+        <div class="form-group-clubs">
             <label for="name">Name</label><br>
             <input type="text" name="name" id="name">
         </div>
 
-        <div class="form-group">
+        <div class="form-group-clubs">
             <label for="description">Description</label><br>
             <input name="description" id="description"></input>
         </div>
 
-        <div class="form-group">
-            <label for="profile_picture">Profile_Picture</label><br>
+        <div class="form-group-clubs">
+            <label for="profile_picture">Profile Picture</label><br>
             <input type="file" name="profile_picture" id="profile_picture">
         </div>
 
-        <div class="form-group">
+        <div class="form-group-clubs">
             <label for="category">Category</label><br>
             <select name="category" id="category">
                 <option value="Arts Clubs">Art Clubs</option>
@@ -39,12 +57,14 @@
             </select>
         </div>
 
-        <button type="submit" class="btn-submit">Create Club</button>
+        <button type="submit" class="btn-submit-clubs">Create Club</button>
     </form>
 
 </div>
 </div>
-@endsection
+</body>
+</html>
+
 
 
 

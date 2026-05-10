@@ -13,6 +13,8 @@
 
 <body>
 
+
+<body>
     <form method="POST" action="{{ route('password.confirm') }}">
         @csrf
 
@@ -34,5 +36,7 @@
             </x-primary-button>
         </div>
     </form>
+</x-guest-layout>
+
 </body>
 </html>

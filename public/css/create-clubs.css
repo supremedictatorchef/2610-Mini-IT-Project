@@ -1,12 +1,41 @@
 body {
     margin: 0;
     max-width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+    position: absolute;
+    top: 100;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-family: "Lato", Arial, Helvetica, sans-serif;
+    font-size: 3em;
+    letter-spacing: 1px;
+    font-weight: 400;
+    text-transform: uppercase;
+    
+}
+
+header {
+    height: 40vh;
+    margin: 0;
+}
+
+header img {
+    filter: brightness(30%);
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
 }
 
 h2, p {
     width: 100%;
     text-align: center;
     font-size: 1.2em;
+    font-family: Arial, Helvetica, sans-serif;
+    
 }
 
 #create-club-h2 {
@@ -14,6 +43,7 @@ h2, p {
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-family: Arial, Helvetica, sans-serif;
 
 }
 
@@ -26,31 +56,48 @@ h2, p {
     box-shadow: 0px 3px 5px grey;
 }
 
-.form-group{
+.form-group-clubs{
     padding: 0.5em 0;
 }
 
-.form-group input{
+.form-group-clubs input{
     width: 400px;
     margin-top: 10px;
+    height: 37px;
 }
 
-.form-group select{
+.form-group-clubs select{
     width: 400px;
     margin-top: 10px;
+    height: 40px;
+    padding: 0 0.5em;
+    font-size: 1.02em;
 }
 
-.form-group select:hover{
+.form-group-clubs select:hover{
     cursor: pointer;
 }
 
-.btn-submit{
+
+.btn-submit-clubs{
     margin-top: 1.5em;
     background-image: linear-gradient(to right, rgb(92, 48, 113), rgb(197, 86, 177));
+    border:0;
     border-radius: 2em;
     color: white;
     height: 50px;
-    width: 150px;
+    width: 500px;
 
 }
+
+#profile_picture{
+    font-size: 17px;
+}
+
+.btn-submit-clubs:hover{
+    cursor: pointer;
+    background-image: linear-gradient(to right, rgb(69, 37, 84), rgb(147, 89, 136));
+
+}
+
 
