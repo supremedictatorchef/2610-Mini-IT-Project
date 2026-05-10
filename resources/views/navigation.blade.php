@@ -17,14 +17,7 @@
     <h1>Clubs and Societies in MMU</h1>
    </header>
 
-   <!-- 🔍 Search Bar -->
-   <div class="search-bar">
-       <form action="{{ route('clubs.search') }}" method="GET">
-           <input type="text" name="query" placeholder="Search clubs or events..."
-                  value="{{ request('query') }}">
-           <button type="submit">Search</button>
-       </form>
-   </div>
+   
 
    <!-- ✅ Dynamic Categories Loop -->
    @foreach (\App\Enums\ClubCategory::cases() as $category)
