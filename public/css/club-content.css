@@ -1,4 +1,4 @@
-/* 1. LAYOUT CONTAINER (70/30 Split) */
+/* 1. LAYOUT CONTAINER */
 .club-container {
     display: flex;
     gap: 20px;
@@ -13,6 +13,23 @@
 
 .club-sidebar {
     flex: 1;
+}
+
+/* Banner */
+.club-banner-placeholder {
+    width: 100%;
+    height: 200px;
+    background: #999999 url("https://via.placeholder.com/1200x200/999999/333333?text=Club+Banner") no-repeat center center;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    border-radius: 8px;
 }
 
 /* Grey Blocks & Info Cards */

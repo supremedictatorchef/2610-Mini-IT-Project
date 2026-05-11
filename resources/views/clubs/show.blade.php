@@ -6,6 +6,10 @@
 
 @section('content')
     <!-- Sub-header -->
+    <div class="club-banner-placeholder">
+    <h2>{{ $club->name }}</h2>
+    </div>
+
     <div class="sub-header" style="display:flex; justify-content:space-between; align-items:center;">
         <div style="flex:1;"></div>
         <h1 style="flex:1; text-align:center; margin:0;">{{ $club->name }}</h1>
