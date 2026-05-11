@@ -9,6 +9,7 @@ use App\Notifications\ClubNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class ClubController extends Controller
 {
@@ -159,8 +160,13 @@ class ClubController extends Controller
         return view('create-clubs.create', compact('club'));
     }
         
-    public function committee(Club $club){ 
-        // missing this line
+    public function committee(Club $club)
+    { 
+        $committee = DB::table('committee_members')
+                    ->where('club_id', $club->id)
+                    ->get();
+
+        return view('clubs.committee', compact('club', 'committee'));
     }
 
     public function addCommitteeMember(Request $request, Club $club)
