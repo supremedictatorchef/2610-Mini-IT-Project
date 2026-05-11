@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/club-content.css') }}">
+@endpush
+
 @section('content')
     <!-- Sub-header -->
     <div class="sub-header" style="display:flex; justify-content:space-between; align-items:center;">
@@ -40,83 +44,117 @@
 
     </div>
 
-    <!-- Posts Section -->
-    <div class="posts-section" style="margin-top:20px; display:block; width:100%;">
-        <h2 class="posts-title">Posts</h2>
-        @forelse($club->posts as $post)
-            <div class="post-card">
-                <h3>{{ $post->title }}</h3>
-                <p>{{ $post->content }}</p>
+    <!-- Club Content -->
+    <div class="club-container">
+        <div class="club-main">
+            <section class="club-section">
+                <h3>About Us</h3>
+                <p>{{ $club->description }}</p>
+            </section>
 
-                @if($post->image)
-                    <img src="{{ asset('storage/' . $post->image) }}" class="post-image" alt="Post image">
-                @endif
+            <section class="club-section">
+                <!-- Posts Section -->
+                <div class="posts-section" style="margin-top:20px; display:block; width:100%;">
+                    <h2 class="posts-title">Posts</h2>
+                    @forelse($club->posts as $post)
+                        <div class="post-card">
+                            <h3>{{ $post->title }}</h3>
+                            <p>{{ $post->content }}</p>
 
-                <div class="mt-2">
-                    <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-green">Edit</a>
-                    <form action="{{ route('posts.destroy', $post->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this post?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-red">Delete</button>
-                    </form>
+                            @if($post->image)
+                                <img src="{{ asset('storage/' . $post->image) }}" class="post-image" alt="Post image">
+                            @endif
+
+                            <div class="mt-2">
+                                <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-green">Edit</a>
+                                <form action="{{ route('posts.destroy', $post->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this post?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-red">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    @empty
+                        <p>No posts yet for this club.</p>
+                    @endforelse
                 </div>
-            </div>
-        @empty
-            <p>No posts yet for this club.</p>
-        @endforelse
-    </div>
+            </section>
+            
+            <section class="club-section">
+                <div class="club-main">
+                    <section class="club-section">
+                        <div class="events-section">
+                            <h2 class="posts-title">Events</h2>
+                            
+                            @if($club->events->count())
+                                <div class="events-table-wrapper">
+                                    <table class="events-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Event Title</th>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Photos</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($club->events as $event)
+                                                <tr>
+                                                    <td>{{ $event->title }}</td>
+                                                    <td>{{ $event->date }}</td>
+                                                    <td>{{ $event->time }}</td>
+                                                    <td>
+                                                        <input type="url" 
+                                                            value="{{ $event->drive_link ?? '' }}" 
+                                                            placeholder="Drive link..." 
+                                                            onchange="updateDriveLink({{ $event->id }}, this.value)" 
+                                                            class="inline-input" />
+                                                        @if($event->drive_link)
+                                                            <a href="{{ $event->drive_link }}" target="_blank" class="btn-blue-sm">View</a>
+                                                        @endif
+                                                    </td>
+                                                    <td class="action-cell">
+                                                        <a href="{{ route('events.edit', ['club' => $club->id, 'event' => $event->id]) }}" class="btn-green-sm">Edit</a>
+                                                        <form action="{{ route('events.destroy', ['club' => $club->id, 'event' => $event->id]) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete event?')">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn-red-sm">Delete</button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <p class="empty-state">No events yet for this club.</p>
+                            @endif
+                        </div>
+                    </section>
+                </div>
+            </section>
+        </div>
 
-    <!-- Events Section -->
-    <div class="events-section" style="margin-top:40px; display:block; width:100%;">
-        <h2 class="posts-title text-center">Events</h2>
-        @if($club->events->count())
-            <div class="events-table-wrapper">
-                <table class="events-table">
-                    <thead>
-                        <tr>
-                            <th>Event Title</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Photos</th> <!-- ✅ new column -->
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($club->events as $event)
-                            <tr>
-                                <td>{{ $event->title }}</td>
-                                <td>{{ $event->date }}</td>
-                                <td>{{ $event->time }}</td>
-                                <td>
-                                    <input type="url"
-                                           value="{{ $event->drive_link ?? '' }}"
-                                           placeholder="Paste Drive link..."
-                                           onchange="updateDriveLink({{ $event->id }}, this.value)"
-                                           class="inline-input" />
-                                    @if($event->drive_link)
-                                        <a href="{{ $event->drive_link }}" target="_blank" class="btn btn-blue" style="margin-left:5px;">
-                                            View
-                                        </a>
-                                    @endif
-                                </td>
-                                <td>
-                                    <a href="{{ route('events.edit', ['club' => $club->id, 'event' => $event->id]) }}" class="btn btn-green">Edit</a>
-                                    <form action="{{ route('events.destroy', ['club' => $club->id, 'event' => $event->id]) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this event?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-red">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+        <div class="club-sidebar">
+            <div class="info-card">
+                <h4>Membership</h4>
+                <p>Join us to get the latest updates and participate in exclusive events.</p>
+                <a href="#" class="btn-join">Register Now</a>
             </div>
-        @else
-            <p class="text-center">No events yet for this club.</p>
-        @endif
+
+            <div class="info-card">
+                <h4>Committee</h4>
+                <a href="/clubs/{{ $club->id }}/committee" class="link-text">View Committee Members</a>
+            </div>
+
+            <div class="info-card">
+                <h4>Contact & FAQ</h4>
+                <p><strong>Email:</strong> {{ $club->email ?? 'N/A' }}</p>
+                <a href="#faq" class="link-text">Frequently Asked Questions</a>
+            </div>
+        </div>
     </div>
-@endsection
 
 @push('scripts')
 <script>

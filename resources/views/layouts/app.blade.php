@@ -13,6 +13,8 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/club-content.css') }}">
+    @stack('styles') 
 </head>
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100">
