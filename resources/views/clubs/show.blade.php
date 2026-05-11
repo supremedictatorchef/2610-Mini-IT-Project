@@ -144,8 +144,9 @@
             <div class="info-card">
                 <h4>Membership</h4>
                 <p>Join us to get the latest updates and participate in exclusive events.</p>
-
-                @if(/*$club->registration_open && */ $club->registration_link) // try to make a checkbox for committee to toggle for registration
+                
+                <!-- try to make registration state with registration open check box -->
+                @if(/*$club->registration_open && */ $club->registration_link)
                     <a href="{{ $club->registration_link }}" class="btn-join" target="_blank">
                         Register Now
                     </a>

@@ -121,11 +121,15 @@ class ClubController extends Controller
         $validated = $request->validate([
         'name'   => 'required|string|max:255',
         'category' => 'required',
-        'profile_picture'   => 'required|image|max:2048',
-        
-        
-          ]);
-          
+        'profile_picture'   => 'nullable|image|max:2048',
+        'description' => 'nullable|string',
+        'category' => 'required|string',
+        'email' => 'nullable|string',
+        'banner' => 'nullable|image',
+        'registration_link' => 'nullable|url',
+        'registration_open' => 'sometimes'
+        ]);
+
 
         if ($request->hasFile('profile_picture')) {
         $validated['profile_picture'] = $request->file('profile_picture')->store('clubs', 'public');
@@ -140,7 +144,6 @@ class ClubController extends Controller
 
         return redirect()->route('navigation')
                         ->with('success', 'Club created successfully!');
-
     }
 
    public function search(Request $request) 
@@ -158,4 +161,33 @@ class ClubController extends Controller
         return view('create-clubs.create', compact('club'));
     }
         
+    public function committee(Club $club){ 
+        // missing this line
+    }
+
+    public function addCommitteeMember(Request $request, Club $club)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'role' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'profile_picture' => 'nullable|image'
+        ]);
+
+        if ($request->hasFile('profile_picture')) {
+            $data['profile_picture'] = $request->file('profile_picture')->store('committee', 'public');
+        }
+
+        $data['club_id'] = $club->id;
+
+        \DB::table('committee_members')->insert($data);
+
+        return redirect()->route('clubs.committee', $club->id);
+    }
+
+    public function removeCommitteeMember(Club $club, $id)
+    {
+        \DB::table('committee_members')->where('id', $id)->delete();
+        return redirect()->route('clubs.committee', $club->id);
+    }
 }

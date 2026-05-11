@@ -15,9 +15,6 @@ use App\Models\Event;
 |--------------------------------------------------------------------------
 */
 
-
-// Route::get('/clubs/search', [ClubController::class, 'apiSearch'])->name('clubs.api-search'); // global search bar
-
 // Homepage – lists posts (and clubs if you want)
 Route::get('/', [PostController::class, 'index'])->name('home');
 Route::get('/clubs/search', [ClubController::class, 'search'])->name('clubs.search');
