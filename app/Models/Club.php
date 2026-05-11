@@ -94,4 +94,13 @@ class Club extends Model
     {
         return !is_null($this->owner_id);
     }
+
+ public function committee()
+{
+    return $this->hasMany(\DB::table('committee')->getModel()); 
+}
+
+
+
+
 }

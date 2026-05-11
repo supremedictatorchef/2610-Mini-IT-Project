@@ -91,6 +91,14 @@ Route::post('/create-clubs', [ClubController::class, 'store'])->name('create-clu
 // Route for edit club 
 Route::get('/create-clubs/{club}/edit', [ClubController::class, 'edit'])->name('create-clubs.edit');
 
+//Committee page 
+
+Route::get('/clubs/{club}/committee', [ClubController::class, 'committee'])->name('clubs.committee');
+Route::post('/clubs/{club}/committee', [ClubController::class, 'addCommitteeMember'])->name('clubs.committee.add');
+Route::delete('/clubs/{club}/committee/{id}', [ClubController::class, 'removeCommitteeMember'])->name('clubs.committee.remove');
+
+
+
 
 Route::get('/logout', function () {
     Auth::logout();
