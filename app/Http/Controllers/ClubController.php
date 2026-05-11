@@ -40,7 +40,7 @@ class ClubController extends Controller
         return view('create-clubs.edit', compact('club'));
     }
 
-        public function update(Request $request, Club $club)
+    public function update(Request $request, Club $club)
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
