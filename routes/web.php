@@ -15,6 +15,11 @@ use App\Models\Event;
 |--------------------------------------------------------------------------
 */
 
+/* 
+Keep public viewing routes outside auth
+Keep edit/update/delete inside auth
+*/ 
+
 // Homepage – lists posts (and clubs if you want)
 Route::get('/', [PostController::class, 'index'])->name('home');
 Route::get('/calendar', function () {
@@ -56,15 +61,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Nested post routes under clubs (create + store)
     Route::get('/create-clubs', [ClubController::class, 'create'])->name('create-clubs.create');
     Route::post('/create-clubs', [ClubController::class, 'store'])->name('create-clubs.store');
+
     Route::resource('clubs', ClubController::class)->except(['create', 'store']);
-
-    // Committee Club Management (Notifications)
-    Route::get('/clubs/{club}/notify', [ClubController::class, 'showNotifyForm'])->name('clubs.notify.form');
-    Route::post('/clubs/{club}/notify', [ClubController::class, 'sendUpdate'])->name('clubs.notify.send');
-
-    // Posts Management
-    Route::get('/clubs/{club}/posts/create', [PostController::class, 'create'])->name('posts.create');
-    Route::post('/clubs/{club}/posts', [PostController::class, 'store'])->name('posts.store');
 
     // Events Management
     Route::get('/clubs/{club}/events/create', [EventController::class, 'create'])->name('events.create');
@@ -77,18 +75,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/clubs/{club}/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
     Route::patch('/clubs/{club}/events/{event}/passed', [EventController::class, 'markPassed'])->name('events.markPassed');
 
-        
+    Route::resource('posts', PostController::class); // do not remove this
+    /* DO NO manually define 
+        posts.edit
+        posts.update
+        posts.destroy
+    */ 
+
+    /* Route::resource() already creates
+        posts.create
+        posts.store
+    */
+
     // Route for edit club // huh? -lzh
     Route::get('/create-clubs/{club}/edit', [ClubController::class, 'edit'])->name('create-clubs.edit');
-
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-
-// Routes for creating club
-Route::resource('clubs', ClubController::class)->except(['create', 'store']);
 
 // Nested post routes under clubs (create + store)
 Route::get('/create-clubs', [ClubController::class, 'create'])->name('create-clubs.create');
@@ -101,13 +102,5 @@ Route::get('/create-clubs/{club}/edit', [ClubController::class, 'edit'])->name('
 Route::get('/clubs/{club}/committee', [ClubController::class, 'committee'])->name('clubs.committee');
 Route::post('/clubs/{club}/committee', [ClubController::class, 'addCommitteeMember'])->name('clubs.committee.add');
 Route::delete('/clubs/{club}/committee/{id}', [ClubController::class, 'removeCommitteeMember'])->name('clubs.committee.remove');
-
-
-
-Route::get('/logout', function () {
-    Auth::logout();
-    return redirect('/login');
-});
-
 
 require __DIR__ . '/auth.php';
