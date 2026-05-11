@@ -16,13 +16,13 @@
                     <form method="POST" action="{{ route('clubs.unfollow', $club->id) }}" style="display:inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-red">Unfollow</button>
+                        <button type="submit" class="btn-red">Unfollow</button>
                     </form>
                 @else
                     <span style="color:gray; font-weight:bold; margin-right:10px;">Not Following</span>
                     <form method="POST" action="{{ route('clubs.follow', $club->id) }}" style="display:inline;">
                         @csrf
-                        <button type="submit" class="btn btn-green">Follow</button>
+                        <button type="submit" class="btn-green">Follow</button>
                     </form>
                 @endif
             @endauth
@@ -38,10 +38,9 @@
         <img src="{{ asset('images/' . $club->profile_picture) }}" class="club-image-rect" alt="{{ $club->name }}">
         <p class="club-description">{{ $club->description }}</p>
 
-        <a href="{{ route('posts.create', $club->id) }}" class="btn btn-blue">Create Post</a>
-        <a href="{{ route('events.create', ['club' => $club->id]) }}" class="btn btn-green">Add Event</a>
-         <a href="{{ route('clubs.edit', $club->id) }}" class="btn btn-yellow">Edit Club</a>
-
+        <a href="{{ route('posts.create', $club->id) }}" class="btn-blue">Create Post</a>
+        <a href="{{ route('events.create', ['club' => $club->id]) }}" class="btn-green">Add Event</a>
+        <a href="{{ route('clubs.edit', $club->id) }}" class="btn-yellow">Edit Club</a>
     </div>
 
     <!-- Club Content -->
@@ -66,11 +65,11 @@
                             @endif
 
                             <div class="mt-2">
-                                <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-green">Edit</a>
+                                <a href="{{ route('posts.edit', $post->id) }}" class="btn-green">Edit</a>
                                 <form action="{{ route('posts.destroy', $post->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this post?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-red">Delete</button>
+                                    <button type="submit" class="btn-red">Delete</button>
                                 </form>
                             </div>
                         </div>
@@ -107,19 +106,20 @@
                                                     <td>
                                                         <input type="url" 
                                                             value="{{ $event->drive_link ?? '' }}" 
-                                                            placeholder="Drive link..." 
+                                                            placeholder="Paste Drive link..." 
                                                             onchange="updateDriveLink({{ $event->id }}, this.value)" 
                                                             class="inline-input" />
                                                         @if($event->drive_link)
-                                                            <a href="{{ $event->drive_link }}" target="_blank" class="btn-blue-sm">View</a>
+                                                            <a href="{{ $event->drive_link }}" target="_blank" class="btn-blue" stlye=margin-left:5px>
+                                                                View</a>
                                                         @endif
                                                     </td>
                                                     <td class="action-cell">
-                                                        <a href="{{ route('events.edit', ['club' => $club->id, 'event' => $event->id]) }}" class="btn-green-sm">Edit</a>
-                                                        <form action="{{ route('events.destroy', ['club' => $club->id, 'event' => $event->id]) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete event?')">
+                                                        <a href="{{ route('events.edit', ['club' => $club->id, 'event' => $event->id]) }}" class="btn-green">Edit</a>
+                                                        <form action="{{ route('events.destroy', ['club' => $club->id, 'event' => $event->id]) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this event?')">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn-red-sm">Delete</button>
+                                                            <button type="submit" class="btn-red">Delete</button>
                                                         </form>
                                                     </td>
                                                 </tr>
@@ -128,7 +128,7 @@
                                     </table>
                                 </div>
                             @else
-                                <p class="empty-state">No events yet for this club.</p>
+                                <p class="text-center">No events yet for this club.</p>
                             @endif
                         </div>
                     </section>
