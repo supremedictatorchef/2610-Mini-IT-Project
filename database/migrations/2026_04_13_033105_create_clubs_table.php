@@ -23,6 +23,7 @@ return new class extends Migration
              */
             $table->string('category')->default(ClubCategory::ART->value); 
             $table->string('profile_picture')->nullable();
+            $table->string('email')->nullable();
 
             // Ownership Logic:
             $table->foreignId('owner_id')

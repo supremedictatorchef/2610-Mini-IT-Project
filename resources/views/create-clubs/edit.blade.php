@@ -32,6 +32,11 @@
             </div>
 
             <div class="form-group">
+                <label for="email">Email</label><br>
+                <input type="text" name="email" id="email" value="{{ old('description', $club->email) }}">
+            </div>
+
+            <div class="form-group">
                 <label for="category">Category</label><br>
                 <select name="category" id="category">
                     <option value="Arts Clubs" {{ $club->category == 'Arts Clubs' ? 'selected' : '' }}>Art Clubs</option>
