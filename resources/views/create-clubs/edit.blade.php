@@ -46,6 +46,12 @@
             </div>
 
             <div class="form-group">
+                <label for="registration_link">Registration Form URL</label><br>
+                <input type="url" name="registration_link" id="registration_link"
+                    value="{{ old('registration_link', $club->registration_link) }}">
+            </div>
+
+            <div class="form-group">
                 <label for="category">Category</label><br>
                 <select name="category" id="category">
                     <option value="Arts Clubs" {{ $club->category == 'Arts Clubs' ? 'selected' : '' }}>Art Clubs</option>
