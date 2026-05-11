@@ -11,6 +11,12 @@
 </head>
 
 <body>
+    <div class="auth-decor">
+        <h1>MMU Clubs & Societies</h1><br>
+        <img src="images/csrw-placeholder-1.jpeg" style="z-index: 999">
+        <img src="images/csrw-placeholder-2.jpeg" style="left:300; top:250;">
+    </div>
+    
 
     <form method="POST" action="{{ route('login') }}" class="log-in-form">
         @csrf
@@ -36,25 +42,28 @@
         </div>
 
         <!-- Remember Me -->
-        <div class="block mt-4 remember-me-box">
-            <label for="remember_me" class="inline-flex items-center">
-                <input class="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember" class="auth-input">
-                
-            </label>
-            <span class="remember-text">{{ __('Remember me') }}</span>
+        <div class="remember-forgot-pass">
+            <div class="block mt-4 remember-me-box">
+                <label for="remember_me" class="inline-flex items-center">
+                    <input class="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember" class="auth-input">
+                    
+                </label>
+                <span class="remember-text">{{ __('Remember me') }}</span>
+            </div>
+
+            <div class="flex items-center justify-end mt-4 forgot-pass">
+                @if (Route::has('password.request'))
+                    <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
+                        {{ __('Forgot your password?') }}<br>
+                    </a>
+                @endif
+                </div>
+
         </div>
-
-        <div class="flex items-center justify-end mt-4 forgot-pass">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}<br>
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
+            <x-primary-button class="ms-3 button-auth">
                 {{ __('Log in') }}
             </x-primary-button>
-        </div>
+        
     </form>
 </body>
 </html>
