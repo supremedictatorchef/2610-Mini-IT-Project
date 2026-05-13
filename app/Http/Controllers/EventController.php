@@ -53,12 +53,13 @@ class EventController extends Controller
     $event = $club->events()->create($validated);
 
     // ✅ Notify ALL members, including sender
-    foreach ($club->users as $member) {
-        $member->notify(new ClubNotification(
-            $club,
-            "New Event Scheduled: {$event->title} on {$event->date} at {$event->time}"
-        ));
-    }
+        foreach ($club->users as $member) {
+            $member->notify(new ClubNotification(
+                $club,
+                "New Event Scheduled: {$event->title} on {$event->date} at {$event->time}",
+                'event' 
+            ));
+        }
 
     return redirect()->route('clubs.show', $club->id)
                      ->with('success', 'Event created and members notified!');

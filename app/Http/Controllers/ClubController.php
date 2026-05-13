@@ -42,33 +42,42 @@ class ClubController extends Controller
     }
 
     public function update(Request $request, Club $club)
-    {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'profile_picture' => 'nullable|image',
-            'category' => 'required|string',
-            'email' => 'nullable|string',
-            'banner_image' => 'nullable|image',
-            'registration_link' => 'nullable|url',
-            'registration_open' => 'sometimes'
-        ]);
-        
-        if ($request->hasFile('profile_picture')) {
-            $data['profile_picture'] = $request->file('profile_picture')->store('clubs', 'public');
-        }
-
-          if ($request->hasFile('banner_image')) {
-        $data['banner_image'] = $request->file('banner_image')->store('banners', 'public'); // ✅ save banner
-    }
-
-        $club->update($data);
-
-        return redirect()->route('clubs.show', $club->id)
-                        ->with('success', 'Club updated successfully!');
-    }
-
+{
+    $data = $request->validate([
+        'name'              => 'required|string|max:255',
+        'description'       => 'nullable|string',
+        'profile_picture'   => 'nullable|image',
+        'category'          => 'required|string',
+        'email'             => 'nullable|string',
+        'banner_image'      => 'nullable|image',
+        'registration_link' => 'nullable|url',
+        'registration_open' => 'sometimes'
+    ]);
     
+    if ($request->hasFile('profile_picture')) {
+        $data['profile_picture'] = $request->file('profile_picture')->store('clubs', 'public');
+    }
+
+    if ($request->hasFile('banner_image')) {
+        $data['banner_image'] = $request->file('banner_image')->store('banners', 'public');
+    }
+
+    // ✅ Update club record
+    $club->update($data);
+
+    // ✅ Notify ALL club members (including sender)
+    foreach ($club->users as $member) {
+        $member->notify(new \App\Notifications\ClubNotification(
+            $club,
+            "{$club->name} has been updated — check out their latest features!",
+            'club' // 👈 specify type so UI shows yellow Club badge
+        ));
+    }
+
+    return redirect()->route('clubs.show', $club->id)
+                     ->with('success', 'Club updated successfully and members notified!');
+}
+
     public function destroy($id)
     {
         $club = Club::findOrFail($id);

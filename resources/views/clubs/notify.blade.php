@@ -1,50 +1,151 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    body {
+        background-color: white;
+        color: white;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    h2 {
+        color: black;
+        margin-bottom: 20px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .notification-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 85vh;
+    }
+
+    .notification-container {
+        display: flex;
+        width: 90%;
+        max-width: 1200px;
+        height: 80vh;
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: #202124;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .notification-list {
+        width: 40%;
+        border-right: 1px solid #3c4043;
+        overflow-y: auto;
+        background-color: #2d2f31;
+    }
+
+    .notification-item {
+        padding: 18px 22px;
+        border-bottom: 1px solid #3c4043;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .notification-item:hover { background-color: #3c4043; }
+    .notification-item.active { background-color: #1a73e8; color: #fff; }
+
+    .notification-detail {
+        flex: 1;
+        padding: 30px;
+        overflow-y: auto;
+        background-color: #292a2d;
+        color: #e8eaed;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        margin-left: 8px;
+    }
+    .badge-event { background-color: #1a73e8; color: #fff; }
+    .badge-post  { background-color: #34a853; color: #fff; }
+    .badge-club  { background-color: #fbbc05; color: #000; } /* ✅ new club badge */
+
+    .btn {
+        border: none;
+        border-radius: 4px;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+        margin-right: 10px;
+    }
+
+    .btn:hover { opacity: 0.9; }
+    .btn-success { background-color: #1a73e8; color: #fff; }
+    .btn-danger  { background-color: #d93025; color: #fff; }
+
+    .notification-actions { margin-top: 20px; }
+</style>
+
 <div class="container mt-4">
-    <h2 class="mb-4">Your Notifications</h2>
+    <h2>Your Notifications</h2>
 
-    @if($notifications->isEmpty())
-        <div class="alert alert-secondary text-center">
-            No notifications yet.
-        </div>
-    @else
-        <div class="list-group">
-            @foreach($notifications as $notification)
-                <div class="list-group-item d-flex justify-content-between align-items-center 
-                    {{ $notification->read_at ? 'bg-light' : 'bg-white' }}" 
-                    style="border-left: 4px solid {{ $notification->read_at ? '#ccc' : '#007bff' }};">
-                    
-                    <div>
-                        <h5 class="mb-1">{{ $notification->data['club_name'] ?? 'Club Update' }}</h5>
-                        <p class="mb-1 text-muted">{{ $notification->data['message'] ?? 'No message content' }}</p>
-                        <small class="text-secondary">{{ $notification->created_at->diffForHumans() }}</small>
-                    </div>
-
-                    <div class="text-end">
-                        @if(!$notification->read_at)
-                            <form action="{{ route('notifications.read', $notification->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-outline-success">Mark as Read</button>
-                            </form>
+    <div class="notification-wrapper">
+        <div class="notification-container">
+            {{-- Left panel --}}
+            <div class="notification-list">
+                @foreach($notifications as $notification)
+                    <div class="notification-item" 
+                         onclick="showNotification('{{ $notification->id }}')"
+                         id="notif-{{ $notification->id }}">
+                        <strong>{{ $notification->data['club_name'] ?? 'Club Update' }}</strong>
+                        @if(isset($notification->data['type']))
+                            <span class="badge badge-{{ $notification->data['type'] }}">
+                                {{ ucfirst($notification->data['type']) }}
+                            </span>
                         @endif
-
-                        <form action="{{ route('notifications.destroy', $notification->id) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                        </form>
+                        <br>
+                        <small>{{ $notification->created_at->diffForHumans() }}</small>
                     </div>
-                </div>
-            @endforeach
-        </div>
+                @endforeach
+            </div>
 
-        <div class="mt-3 text-center">
-            <form action="{{ route('notifications.readAll') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-primary">Mark All as Read</button>
-            </form>
+            {{-- Right panel --}}
+            <div class="notification-detail" id="notification-detail">
+                <p>Select a notification to view its details.</p>
+            </div>
         </div>
-    @endif
+    </div>
 </div>
+
+<script>
+    const notifications = @json($notifications);
+
+    function showNotification(id) {
+        document.querySelectorAll('.notification-item').forEach(el => el.classList.remove('active'));
+        document.getElementById('notif-' + id).classList.add('active');
+
+        const notif = notifications.find(n => n.id == id);
+        const detail = document.getElementById('notification-detail');
+        detail.innerHTML = `
+            <h4 style="color:#fff;">${notif.data.club_name ?? 'Club Update'}
+                ${notif.data.type ? `<span class="badge badge-${notif.data.type}">${notif.data.type}</span>` : ''}
+            </h4>
+            <p style="color:#ccc;">${notif.data.message ?? 'No message content'}</p>
+            <small style="color:#999;">${new Date(notif.created_at).toLocaleString()}</small>
+
+            <div class="notification-actions">
+                <form action="/notifications/${id}/read" method="POST" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-success">Mark as Read</button>
+                </form>
+
+                <form action="/notifications/${id}" method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        `;
+    }
+</script>
 @endsection
