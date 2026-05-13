@@ -73,7 +73,14 @@ Route::middleware(['auth'])->group(function () {
 
     Route::put('/clubs/{club}/events/{event}', [EventController::class, 'update'])->name('events.update');
     Route::delete('/clubs/{club}/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
-    Route::patch('/clubs/{club}/events/{event}/passed', [EventController::class, 'markPassed'])->name('events.markPassed');
+    Route::post('/events/{event}/upload-files', [EventController::class, 'uploadFiles'])->name('events.uploadFiles');
+    Route::get('/events/{event}/uploads', [EventController::class, 'viewUploads'])
+     ->name('events.viewUploads');
+     // Delete a single photo from an event
+Route::delete('/events/{event}/delete-photo', [EventController::class, 'deletePhoto'])
+     ->name('events.deletePhoto');
+
+
 
 // Posts nested under clubs
 Route::get('/clubs/{club}/posts/create', [PostController::class, 'create'])->name('posts.create');

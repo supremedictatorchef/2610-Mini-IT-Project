@@ -111,20 +111,25 @@
                                         <tbody>
                                             @foreach($club->events as $event)
                                                 <tr>
-                                                    <td>{{ $event->title }}</td>
-                                                    <td>{{ $event->date }}</td>
-                                                    <td>{{ $event->time }}</td>
-                                                    <td>
-                                                        <input type="url" 
-                                                            value="{{ $event->drive_link ?? '' }}" 
-                                                            placeholder="Paste Drive link..." 
-                                                            onchange="updateDriveLink({{ $event->id }}, this.value)" 
-                                                            class="inline-input" />
-                                                        @if($event->drive_link)
-                                                            <a href="{{ $event->drive_link }}" target="_blank" class="btn-blue" stlye=margin-left:5px>
-                                                                View</a>
+                                                  <td>{{ $event->title }}</td>
+                                                  <td>{{ $event->time }}</td>
+                                                  <td>{{ $event->time }}</td>
+
+                                                <td>
+                                                        <form action="{{ route('events.uploadFiles', $event->id) }}" method="POST" enctype="multipart/form-data">
+                                                            @csrf
+                                                            <input type="file" name="event_files[]" multiple class="inline-input" />
+                                                            <button type="submit" class="btn-blue" style="margin-left:5px;">Upload</button>
+                                                        </form>
+
+                                                        @if($event->uploads)
+                                                            <a href="{{ route('events.viewUploads', $event->id) }}" 
+                                                            class="btn-green" style="margin-left:5px;" target="_blank">
+                                                            View Photos
+                                                            </a>
                                                         @endif
                                                     </td>
+
                                                     <td class="action-cell">
                                                         <a href="{{ route('events.edit', ['club' => $club->id, 'event' => $event->id]) }}" class="btn-green">Edit</a>
                                                         <form action="{{ route('events.destroy', ['club' => $club->id, 'event' => $event->id]) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this event?')">
