@@ -42,6 +42,9 @@ Route::middleware(['auth'])->group(function () {
     // Dashboard - shows profile + followed clubs/events
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
     Route::patch('/dashboard', [UserController::class, 'updateProfile'])->name('dashboard.update');
+    Route::delete('/users/{user}', [App\Http\Controllers\UserController::class, 'destroy'])
+    ->name('users.destroy');
+
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -49,10 +52,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Notifications Feed
-Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
-Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
-Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
 
     // Notifications/Notify Logic
@@ -82,7 +85,7 @@ Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])
     Route::get('/events/{event}/uploads', [EventController::class, 'viewUploads'])
      ->name('events.viewUploads');
      // Delete a single photo from an event
-Route::delete('/events/{event}/delete-photo', [EventController::class, 'deletePhoto'])
+    Route::delete('/events/{event}/delete-photo', [EventController::class, 'deletePhoto'])
      ->name('events.deletePhoto');
 
 

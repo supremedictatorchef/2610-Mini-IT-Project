@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Club;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -15,15 +17,12 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
-        // Get IDs from the JSON column
         $clubIds = $user->followed_clubs ?? [];
 
-        // Fetch clubs the user follows along with their posts and events
         $followedClubs = Club::whereIn('id', $clubIds)
             ->with(['posts', 'events'])
             ->get();
 
-        // Flatten events from followed clubs to show in a single list/calendar view
         $events = $followedClubs->pluck('events')->flatten();
 
         return view('dashboard', [
@@ -33,7 +32,43 @@ class UserController extends Controller
     }
 
     /**
-     * Follow a club (add club ID to user's followed_clubs JSON array).
+     * Register/store new user with default mmu.png picture.
+     */
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::create([
+            'name'            => $data['name'],
+            'email'           => $data['email'],
+            'password'        => Hash::make($data['password']),
+            'profile_picture' => 'images/mmu.png', 
+        ]);
+
+        Auth::login($user);
+
+        return redirect()->route('dashboard')->with('success', 'Welcome aboard!');
+    }
+
+    public function destroy(User $user)
+{
+    // Only allow deleting your own account
+    if (Auth::id() !== $user->id) {
+        return back()->with('error', 'You can only delete your own account.');
+    }
+
+    $user->delete(); // ✅ Hard delete (permanent removal)
+
+    return redirect('/')->with('success', 'Your account has been deleted.');
+}
+
+
+    /**
+     * Follow a club.
      */
     public function followClub(Club $club)
     {
@@ -50,14 +85,13 @@ class UserController extends Controller
     }
 
     /**
-     * Unfollow a club (remove club ID from user's followed_clubs JSON array).
+     * Unfollow a club.
      */
     public function unfollowClub(Club $club)
     {
         $user = Auth::user();
         $followed = $user->followed_clubs ?? [];
 
-        // Remove the ID and reset array keys
         $user->followed_clubs = array_values(array_diff($followed, [$club->id]));
         $user->save();
 
@@ -83,6 +117,9 @@ class UserController extends Controller
         if ($request->hasFile('profile_picture')) {
             $path = $request->file('profile_picture')->store('profile_pictures', 'public');
             $user->profile_picture = $path;
+        } elseif (!$user->profile_picture) {
+            // ✅ Fallback if user never had a picture
+            $user->profile_picture = 'images/mmu.png';
         }
 
         $user->save();
@@ -90,15 +127,17 @@ class UserController extends Controller
         return redirect()->route('dashboard')->with('success', 'Profile updated successfully!');
     }
 
+    /**
+     * Search users by name/email.
+     */
     public function search(Request $request)
-{
-    $q = $request->input('q');
-    $users = \App\Models\User::where('name', 'like', "%{$q}%")
-                ->orWhere('email', 'like', "%{$q}%")
-                ->limit(10)
-                ->get(['id','name','email']);
+    {
+        $q = $request->input('q');
+        $users = User::where('name', 'like', "%{$q}%")
+            ->orWhere('email', 'like', "%{$q}%")
+            ->limit(10)
+            ->get(['id','name','email']);
 
-    return response()->json($users);
-}
-
+        return response()->json($users);
+    }
 }
