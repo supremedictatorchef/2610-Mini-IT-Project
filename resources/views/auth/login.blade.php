@@ -25,19 +25,20 @@
         <div class="form-box-category">
             <x-input-label for="email" :value="__('Email')" class="auth-lbl"/><br>
             <x-text-input id="email" class="block mt-1 w-full first-box" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" class="auth-input" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            
         </div>
 
         <!-- Password -->
         <div class="mt-4 form-box-category">
             <x-input-label for="password" :value="__('Password')" class="auth-lbl" /><br>
 
-            <x-text-input id="password" class="block mt-1 w-full second-box"
+            <x-text-input id="password" class="block mt-1 w-full second-box auth-input"
                             type="password"
                             name="password"
                             required autocomplete="current-password"
-                            class="auth-input" />
-
+                            />
+                            
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
