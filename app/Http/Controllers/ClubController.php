@@ -306,10 +306,17 @@ class ClubController extends Controller
     }
 
    // Chatroom fucntion 
-   public function chatroom(Club $club)
+public function chatroom(Club $club)
 {
-    return view('clubs.chatroom', compact('club'));
+    $messages = $club->messages()
+        ->with('user') // critical: ensures $message->user is populated
+        ->orderBy('created_at')
+        ->get();
+
+    return view('clubs.chatroom', compact('club', 'messages'));
 }
+
+
 
 
 }

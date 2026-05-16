@@ -139,10 +139,8 @@
 
         <!-- Public View -->
         <div id="profile-view">
-            <img src="{{ Auth::user()->profile_picture 
-                         ? asset('storage/' . Auth::user()->profile_picture) 
-                         : asset('images/mmu.png') }}" 
-                 alt="Profile Picture">
+          <img src="{{ Auth::user()->profile_picture ?? asset('images/mmu.png') }}" alt="Profile Picture">
+
             <h2>{{ Auth::user()->name }}</h2>
             <p>{{ Auth::user()->email }}</p>
         </div>

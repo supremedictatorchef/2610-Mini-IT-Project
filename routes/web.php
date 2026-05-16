@@ -8,6 +8,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Models\Event;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\MessageController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -129,6 +131,11 @@ Route::put('/clubs/{club}/committee/{id}/update', [App\Http\Controllers\ClubCont
  //Club Chatroom Page
 Route::get('/clubs/{club}/chatroom', [App\Http\Controllers\ClubController::class, 'chatroom'])
      ->name('clubs.chatroom');
+     Route::post('/clubs/{club}/messages', [MessageController::class, 'store'])
+    ->name('clubs.messages.store');
+    Route::delete('/messages/{message}', [MessageController::class, 'destroy'])->name('messages.destroy');
+
+
 
 
 require __DIR__ . '/auth.php';

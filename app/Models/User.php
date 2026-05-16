@@ -71,4 +71,11 @@ class User extends Authenticatable
     {
         return $this->clubs()->with('events')->get()->pluck('events')->flatten();
     }
+
+   public function getProfilePictureAttribute($value)
+{
+    return $value ? asset('storage/' . $value) : asset('images/mmu.png');
+}
+
+
 }

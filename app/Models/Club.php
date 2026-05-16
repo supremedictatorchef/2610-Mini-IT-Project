@@ -106,4 +106,11 @@ class Club extends Model
         return $this->hasMany(\DB::table('committee')->getModel()); 
     }
 
+    public function messages()
+{
+    return $this->hasMany(Message::class);
 }
+
+
+}
+
