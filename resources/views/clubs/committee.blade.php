@@ -176,55 +176,82 @@
 </div>
 
 <div id="committee-list">
-@foreach($committee as $member)
-    @if($member->status === 'accepted')
-        <div class="profile-card" id="card-{{ $member->id }}" data-id="{{ $member->id }}">
-            <span class="drag-handle">⋮⋮</span>
-            <div class="icon-bar">
-                <button class="edit-icon" data-id="{{ $member->id }}">✏️</button>
-                <form action="{{ route('clubs.committee.remove', [$club->id, $member->id]) }}" 
-                      method="POST" onsubmit="return confirm('Are you sure you want to remove this member?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="delete-icon">🗑️</button>
-                </form>
-            </div>
-
-            <div class="profile-left">
-                <img src="{{ asset($member->profile_picture ?? 'images/mmu.png') }}" 
-                     alt="Profile Picture" class="profile-img">
-            </div>
-
-            <div class="profile-right">
-                <div class="profile-view" id="view-{{ $member->id }}">
-                    <h3>{{ $member->name }}</h3>
-                    <p><strong>Role:</strong> {{ $member->role }}</p>
-                    <p>{{ $member->description ?? 'No description provided.' }}</p>
-                </div>
-
-                <form action="{{ route('clubs.committee.update', [$club->id, $member->id]) }}" 
-                      method="POST" enctype="multipart/form-data" 
-                      class="profile-edit" id="edit-{{ $member->id }}" style="display:none;">
-                    @csrf
-                    @method('PUT')
-
-                    <label>Role</label>
-                    <input type="text" name="role" value="{{ $member->role }}" class="form-control-inline">
-
-                    <label>Description</label>
-                    <textarea name="description" class="form-control-inline" rows="3">{{ $member->description ?? '' }}</textarea>
-
-                    <label>Profile Picture</label>
-                    <input type="file" name="profile_picture" class="form-control-inline">
-
-                    <button type="submit" class="btn-primary" style="margin-top:10px;">Save Changes</button>
-                    <button type="button" class="btn-secondary cancel-btn" data-id="{{ $member->id }}">Cancel</button>
-                </form>
-            </div>
+    {{-- Default card for president --}}
+    <div class="profile-card" id="card-president" data-id="president">
+        <span class="drag-handle">⋮⋮</span>
+        <div class="icon-bar">
+            <button class="edit-icon" data-id="president">✏️</button>
+            <form action="{{ route('clubs.committee.remove', [$club->id, 'president']) }}" 
+                  method="POST" onsubmit="return confirm('Are you sure you want to remove the president?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="delete-icon">🗑️</button>
+            </form>
         </div>
-    @endif
-@endforeach
+        <div class="profile-left">
+            <img src="{{ asset('images/mmu.png') }}" alt="Default Profile" class="profile-img">
+        </div>
+        <div class="profile-right">
+            <div class="profile-view" id="view-president">
+                <h3>{{ $club->owner->name ?? 'N/A' }}</h3>
+                <p><strong>Role:</strong> President</p>
+                <p>N/A</p>
+            </div>
+            <form action="{{ route('clubs.committee.update', [$club->id, 'president']) }}" 
+                  method="POST" enctype="multipart/form-data" 
+                  class="profile-edit" id="edit-president" style="display:none;">
+                @csrf
+                @method('PUT')
+                <input type="text" name="role" value="President" class="form-control-inline">
+                <textarea name="description" class="form-control-inline" rows="3">N/A</textarea>
+                <input type="file" name="profile_picture" class="form-control-inline">
+                <button type="submit" class="btn-primary">Save Changes</button>
+                <button type="button" class="btn-secondary cancel-btn" data-id="president">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    {{-- Cards for accepted committee members --}}
+    @foreach($committee as $member)
+        @if($member->status === 'accepted')
+            <div class="profile-card" id="card-{{ $member->id }}" data-id="{{ $member->id }}">
+                <span class="drag-handle">⋮⋮</span>
+                <div class="icon-bar">
+                    <button class="edit-icon" data-id="{{ $member->id }}">✏️</button>
+                    <form action="{{ route('clubs.committee.remove', [$club->id, $member->id]) }}" 
+                          method="POST" onsubmit="return confirm('Are you sure you want to remove this member?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="delete-icon">🗑️</button>
+                    </form>
+                </div>
+                <div class="profile-left">
+                    <img src="{{ asset($member->profile_picture ?? 'images/mmu.png') }}" 
+                         alt="Profile Picture" class="profile-img">
+                </div>
+                <div class="profile-right">
+                    <div class="profile-view" id="view-{{ $member->id }}">
+                        <h3>{{ $member->name }}</h3>
+                        <p><strong>Role:</strong> {{ $member->role }}</p>
+                        <p>{{ $member->description ?? 'No description provided.' }}</p>
+                    </div>
+                    <form action="{{ route('clubs.committee.update', [$club->id, $member->id]) }}" 
+                          method="POST" enctype="multipart/form-data" 
+                          class="profile-edit" id="edit-{{ $member->id }}" style="display:none;">
+                        @csrf
+                        @method('PUT')
+                        <input type="text" name="role" value="{{ $member->role }}" class="form-control-inline">
+                        <textarea name="description" class="form-control-inline" rows="3">{{ $member->description ?? '' }}</textarea>
+                        <input type="file" name="profile_picture" class="form-control-inline">
+                        <button type="submit" class="btn-primary" style="margin-top:10px;">Save Changes</button>
+                        <button type="button" class="btn-secondary cancel-btn" data-id="{{ $member->id }}">Cancel</button>
+                    </form>
+                </div>
+            </div>
+        @endif
+    @endforeach
 </div>
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -266,13 +293,17 @@ $(document).ready(function() {
         $('#view-' + id).show();
     });
 
-    // ✅ Drag and drop with SortableJS
-    Sortable.create(document.getElementById('committee-list'), {
-        animation: 150,
-        handle: '.drag-handle',   // only grip icon draggable
-        ghostClass: 'sortable-ghost',
-        chosenClass: 'sortable-chosen'
-    });
+    //Drag and Drop Card
+   Sortable.create(document.getElementById('committee-list'), {
+    animation: 150,
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    filter: '.edit-icon, .delete-icon',   // prevent drag when clicking edit/delete
+    onFilter: function (evt) {
+        evt.preventDefault();
+    }
+});
+
 });
 </script>
 @endsection
