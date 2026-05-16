@@ -9,6 +9,7 @@
         @auth
         <li><a href="{{ url('/calendar') }}">Calendar</a></li>
         <li><a href="{{ url('/notifications') }}">Notifications</a></li>
+        <li><a href="{{ url('/create-clubs') }}">Create Clubs</a></li>
 
         
         @endauth

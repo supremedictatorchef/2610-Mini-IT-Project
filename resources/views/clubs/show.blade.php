@@ -1,3 +1,19 @@
+@php
+    $themes = config('themes');
+
+    $selectedTheme = $themes[$club->theme] ?? $themes['default'];
+@endphp
+
+<style>
+:root{
+    --bg: {{ $selectedTheme['bg'] }};
+    --text: {{ $selectedTheme['text'] }};
+    --content-box: {{ $selectedTheme['content-box'] }};
+    --shadow-color: {{ $selectedTheme['shadow-color'] }};
+    --post-colour: {{ $selectedTheme['post-colour'] }};
+}
+</style>
+
 @extends('layouts.app')
 
 @push('styles')

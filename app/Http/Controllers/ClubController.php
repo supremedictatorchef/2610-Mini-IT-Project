@@ -51,7 +51,8 @@ class ClubController extends Controller
             'email' => 'nullable|string',
             'banner' => 'nullable|image',
             'registration_link' => 'nullable|url',
-            'registration_open' => 'sometimes'
+            'registration_open' => 'sometimes',
+            'theme' => 'required|string',
         ]);
         
         if ($request->hasFile('profile_picture')) {
@@ -127,7 +128,8 @@ class ClubController extends Controller
         'email' => 'nullable|string',
         'banner' => 'nullable|image',
         'registration_link' => 'nullable|url',
-        'registration_open' => 'sometimes'
+        'registration_open' => 'sometimes',
+        'theme' => 'required|string'
         ]);
 
 

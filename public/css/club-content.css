@@ -1,4 +1,14 @@
+/* theme related stuff */
+
+body{
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+
 /* 1. LAYOUT CONTAINER */
+
+
 .club-container {
     display: flex;
     gap: 20px;
@@ -34,12 +44,12 @@
 
 /* Grey Blocks & Info Cards */
 .club-section, .info-card {
-    background: #999999; 
+    background: var(--content-box);
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
-    color: #000000; 
-    box-shadow: none; 
+    color: var(--text); 
+    box-shadow: var(--shadow-color); 
     border: 1px solid #777; 
 }
 
@@ -53,7 +63,7 @@
 
 /* 2. POST CARD STYLES */
 .post-card {
-    background-color: grey; 
+    background-color: var(--post-colour); 
     padding: 20px;
     margin: 20px auto;
     border-radius: 8px;
@@ -81,7 +91,7 @@
 }
 
 .post-card:hover {
-    background: rgb(121, 189, 144);
+    background: var(--post-colour);
 }
 
 .post-title {
@@ -278,7 +288,7 @@
 
 .link-text {
     display: inline-block;
-    color: #000;
+    color: var(--text);
     text-decoration: underline;
     font-weight: bold;
     margin-top: 5px;

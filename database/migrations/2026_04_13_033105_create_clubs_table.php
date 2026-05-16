@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('profile_picture')->nullable();
             $table->string('email')->nullable();
             $table->string('banner_image')->nullable();
+            $table->string('theme')->default('default');
             $table->string('registration_link')->nullable();
             $table->boolean('registration_open')->default(false);
 

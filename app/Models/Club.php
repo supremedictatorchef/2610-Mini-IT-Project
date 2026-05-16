@@ -22,7 +22,8 @@ class Club extends Model
         'email',
         'banner',
         'registration_link',
-        'registration_open'
+        'registration_open',
+        'theme'
     ];
 
     protected $casts = [

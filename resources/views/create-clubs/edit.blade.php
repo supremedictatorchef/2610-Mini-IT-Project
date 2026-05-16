@@ -1,3 +1,7 @@
+@php
+    $themes = config('themes');
+@endphp
+
 @extends('layouts.app')
 
 @section('content')
@@ -151,6 +155,18 @@
                     <option value="Cultural Clubs" {{ $club->category == 'Cultural Clubs' ? 'selected' : '' }}>Cultural Clubs</option>
                     <option value="Tech Clubs" {{ $club->category == 'Tech Clubs' ? 'selected' : '' }}>Tech Clubs</option>
                     <option value="Recreational / Physical Activities Clubs" {{ $club->category == 'Recreational / Physical Activities Clubs' ? 'selected' : '' }}>Recreational / Physical Activities Clubs</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="theme">Theme</label>
+                <select name="theme" id="theme">
+                     @foreach($themes as $themeName => $theme)
+                        <option value="{{ $themeName }}"
+                            {{ $club->theme == $themeName ? 'selected' : '' }}>
+                            {{ $themeName }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
 
