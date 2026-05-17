@@ -61,6 +61,11 @@
         <a href="{{ route('posts.create', $club->id) }}" class="btn-blue">Create Post</a>
         <a href="{{ route('events.create', ['club' => $club->id]) }}" class="btn-green">Add Event</a>
         <a href="{{ route('clubs.edit', $club->id) }}" class="btn-yellow">Edit Club</a>
+        <form action="{{ route('clubs.destroy', $club->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this club?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn-red">Delete</button>
+        </form>
     </div>
 
     <!-- Club Content -->
