@@ -12,14 +12,14 @@ use Illuminate\Support\Facades\Auth;
 class EventController extends Controller
 {
     // ✅ Helper method to verify if the user is a Committee Member
-    private function authorizeCommittee(Club $club)
-    {
-        $membership = $club->users()->where('user_id', Auth::id())->first();
+ //   private function authorizeCommittee(Club $club)
+ //   {
+   //     $membership = $club->users()->where('user_id', Auth::id())->first();
 
-        if (!$membership || $membership->pivot->role !== ClubRole::COMMITTEE->value) {
-            abort(403, 'Unauthorized action. Only committee members can manage events.');
-        }
-    }
+     //   if (!$membership || $membership->pivot->role !== ClubRole::COMMITTEE->value) {
+      //      abort(403, 'Unauthorized action. Only committee members can manage events.');
+    //    }
+ //   }
 
     public function index()
     {
@@ -34,13 +34,13 @@ class EventController extends Controller
 
     public function create(Club $club)
     {
-        $this->authorizeCommittee($club);
+      //  $this->authorizeCommittee($club);
         return view('events.create', compact('club'));
     }
 
    public function store(Request $request, Club $club)
 {
-    $this->authorizeCommittee($club);
+  //  $this->authorizeCommittee($club);
 
     $validated = $request->validate([
         'title'       => 'required|string|max:255',
@@ -68,13 +68,13 @@ class EventController extends Controller
 
     public function edit(Club $club, Event $event)
     {
-        $this->authorizeCommittee($club);
+        //$this->authorizeCommittee($club);
         return view('events.edit', compact('club', 'event'));
     }
 
     public function update(Request $request, Club $club, Event $event)
     {
-        $this->authorizeCommittee($club);
+      //  $this->authorizeCommittee($club);
 
         $validated = $request->validate([
             'title'       => 'required|string|max:255',
@@ -93,7 +93,7 @@ class EventController extends Controller
 
     public function destroy(Club $club, Event $event)
     {
-        $this->authorizeCommittee($club);
+      //  $this->authorizeCommittee($club);
         $event->delete();
 
         return redirect()->route('clubs.show', $club->id)

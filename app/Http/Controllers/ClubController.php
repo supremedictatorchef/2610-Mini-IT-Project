@@ -281,20 +281,26 @@ class ClubController extends Controller
         'profile_picture' => 'nullable|image|max:2048',
     ]);
 
-    if ($request->hasFile('profile_picture')) {
-        $data['profile_picture'] = $request->file('profile_picture')->store('committee', 'public');
-    }
-
-    DB::table('committee_members')->where('id', $id)->update([
+    $updateData = [
         'role' => $data['role'],
         'description' => $data['description'] ?? null,
-        'profile_picture' => $data['profile_picture'] ?? null,
         'updated_at' => now(),
-    ]);
+    ];
+
+    if ($request->hasFile('profile_picture')) {
+        $updateData['profile_picture'] = $request->file('profile_picture')->store('committee', 'public');
+    }
+
+    DB::table('committee_members')
+        ->where('id', $id)
+        ->where('club_id', $club->id)
+        ->update($updateData);
 
     return redirect()->route('clubs.committee', $club->id)
                      ->with('success', 'Profile updated successfully!');
 }
+
+
 
     // --------------------------
     // Remove committee member
