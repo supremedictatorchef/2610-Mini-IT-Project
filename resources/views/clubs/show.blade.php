@@ -1,3 +1,7 @@
+@php
+    $isCommittee = Auth::user() && Auth::user()->clubs()->where('club_id', $club->id)->first()?->pivot->role === \App\Enums\ClubRole::COMMITTEE->value;
+@endphp {{-- 💡 Check once if the logged-in user is a committee member of this club --}}
+
 @extends('layouts.app')
 
 @push('styles')
@@ -49,32 +53,38 @@
         <img src="{{ asset('images/' . $club->profile_picture) }}" class="club-image-rect" alt="{{ $club->name }}">
         <p class="club-description">{{ $club->description }}</p>
 
-        <a href="{{ route('posts.create', $club->id) }}" class="btn-blue">Create Post</a>
-        <a href="{{ route('events.create', ['club' => $club->id]) }}" class="btn-green">Add Event</a>
-        <a href="{{ route('clubs.edit', $club->id) }}" class="btn-yellow">Edit Club</a>
+        @if($isCommittee)
+            <div class="club-actions-toolbar">
+                <a href="{{ route('posts.create', $club->id) }}" class="btn-blue">Create Post</a>
+                <a href="{{ route('events.create', ['club' => $club->id]) }}" class="btn-green">Add Event</a>
+                <a href="{{ route('clubs.edit', $club->id) }}" class="btn-yellow">Edit Club</a>
+            </div>
+        @endif
     </div>
 
     <!-- Club Content -->
     <div class="club-container">
-        <div class="club-main">
-            <section class="club-section">
-                <h3>About Us</h3>
-                <p>{{ $club->description }}</p>
-            </section>
+    <div class="club-main">
+        <section class="club-section">
+            <h3>About Us</h3>
+            <p>{{ $club->description }}</p>
+        </section>
 
-            <section class="club-section">
-                <!-- Posts Section -->
-                <div class="posts-section" style="margin-top:20px; display:block; width:100%;">
-                    <h2 class="posts-title">Posts</h2>
-                    @forelse($club->posts as $post)
-                        <div class="post-card">
-                            <h3>{{ $post->title }}</h3>
-                            <p>{{ $post->content }}</p>
+        <section class="club-section">
+            <div class="posts-section" style="margin-top:20px; display:block; width:100%;">
+                <h2 class="posts-title">Posts</h2>
 
-                            @if($post->image)
-                                <img src="{{ asset('storage/' . $post->image) }}" class="post-image" alt="Post image">
-                            @endif
+                @forelse($club->posts as $post)
+                    <div class="post-card">
+                        <h3>{{ $post->title }}</h3>
+                        <p>{{ $post->content }}</p>
 
+                        @if($post->image)
+                            <img src="{{ asset('storage/' . $post->image) }}" class="post-image" alt="Post image">
+                        @endif
+
+                        {{-- 🛡️ Hide/Show Management Controls based on Role --}}
+                        @if($isCommittee)
                             <div class="mt-2">
                                 <a href="{{ route('posts.edit', $post->id) }}" class="btn-green">Edit</a>
                                 <form action="{{ route('posts.destroy', $post->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this post?')">
@@ -83,19 +93,20 @@
                                     <button type="submit" class="btn-red">Delete</button>
                                 </form>
                             </div>
-                        </div>
-                    @empty
-                        <p>No posts yet for this club.</p>
-                    @endforelse
-                </div>
-            </section>
+                        @endif
+                    </div>
+                @empty
+                    <p>No posts yet for this club.</p>
+                @endforelse
+            </div>
+        </section>
             
             <section class="club-section">
                 <div class="club-main">
                     <section class="club-section">
                         <div class="events-section">
                             <h2 class="posts-title">Events</h2>
-                            
+
                             @if($club->events->count())
                                 <div class="events-table-wrapper">
                                     <table class="events-table">
@@ -105,39 +116,49 @@
                                                 <th>Date</th>
                                                 <th>Time</th>
                                                 <th>Photos</th>
-                                                <th>Actions</th>
+                                                {{-- 🛡️ Hide/Show column header --}}
+                                                @if($isCommittee)
+                                                    <th>Actions</th>
+                                                @endif
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @foreach($club->events as $event)
                                                 <tr>
-                                                  <td>{{ $event->title }}</td>
-                                                  <td>{{ $event->time }}</td>
-                                                  <td>{{ $event->time }}</td>
+                                                    <td>{{ $event->title }}</td>
+                                                    <td>{{ $event->date }}</td> {{-- Fixed: assumed your original copy-paste typo of $event->time was meant to be date --}}
+                                                    <td>{{ $event->time }}</td>
 
-                                                <td>
-                                                        <form action="{{ route('events.uploadFiles', $event->id) }}" method="POST" enctype="multipart/form-data">
-                                                            @csrf
-                                                            <input type="file" name="event_files[]" multiple class="inline-input" />
-                                                            <button type="submit" class="btn-blue" style="margin-left:5px;">Upload</button>
-                                                        </form>
+                                                    <td>
+                                                        {{-- 🛡️ Hide Upload form field from normal members --}}
+                                                        @if($isCommittee)
+                                                            <form action="{{ route('events.uploadFiles', ['club' => $club->id, 'event' => $event->id]) }}" method="POST" enctype="multipart/form-data" style="display: inline-block; margin-bottom: 5px;">
+                                                                @csrf
+                                                                <input type="file" name="event_files[]" multiple class="inline-input" />
+                                                                <button type="submit" class="btn-blue" style="margin-left:5px;">Upload</button>
+                                                            </form>
+                                                        @endif
 
+                                                        {{-- 🔓 Everyone can see the button if photos exist --}}
                                                         @if($event->uploads)
-                                                            <a href="{{ route('events.viewUploads', $event->id) }}" 
+                                                            <a href="{{ route('events.viewUploads', ['club' => $club->id, 'event' => $event->id]) }}" 
                                                             class="btn-green" style="margin-left:5px;" target="_blank">
-                                                            View Photos
+                                                                View Photos
                                                             </a>
                                                         @endif
                                                     </td>
 
-                                                    <td class="action-cell">
-                                                        <a href="{{ route('events.edit', ['club' => $club->id, 'event' => $event->id]) }}" class="btn-green">Edit</a>
-                                                        <form action="{{ route('events.destroy', ['club' => $club->id, 'event' => $event->id]) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this event?')">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn-red">Delete</button>
-                                                        </form>
-                                                    </td>
+                                                    {{-- 🛡️ Hide entire actions data column --}}
+                                                    @if($isCommittee)
+                                                        <td class="action-cell">
+                                                            <a href="{{ route('events.edit', ['club' => $club->id, 'event' => $event->id]) }}" class="btn-green">Edit</a>
+                                                            <form action="{{ route('events.destroy', ['club' => $club->id, 'event' => $event->id]) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this event?')">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn-red">Delete</button>
+                                                            </form>
+                                                        </td>
+                                                    @endif
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -180,9 +201,11 @@
 
 <!-- CONTACT & FAQ CARD -->
 <div class="info-card contact-card">
-    <div class="icon-bar">
-        <button class="edit-icon" id="edit-contact">✏️</button>
-    </div>
+    @if($isCommittee)
+        <div class="icon-bar">
+            <button class="edit-icon" id="edit-contact">✏️</button>
+        </div>
+    @endif
 
     <!-- Public View -->
     <div id="contact-view">
@@ -190,7 +213,8 @@
         <p><strong>Email:</strong> {{ $club->email ?? 'N/A' }}</p>
         <p><strong>Instagram:</strong> {{ $club->instagram ?? 'N/A' }}</p>
         <p><strong>Website:</strong> {{ $club->website ?? 'N/A' }}</p>
-        <a href="#faq" class="link-text">Frequently Asked Questions</a>
+        
+        <a href="/clubs/{{ $club->id }}/faq" class="link-text">Frequently Asked Questions</a>
     </div>
 
     <!-- Edit Form (hidden by default) -->

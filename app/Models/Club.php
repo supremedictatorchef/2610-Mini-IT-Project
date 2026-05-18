@@ -110,6 +110,5 @@ class Club extends Model
     public function faqs()
     {
         return $this->hasMany(Faq::class); 
-        // This assumes your FAQ model is named 'Faq' and has a 'club_id' foreign key
     }
 }
