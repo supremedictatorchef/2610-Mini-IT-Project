@@ -1,0 +1,141 @@
+/* Base Page Styling matching your screenshot background */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4; /* Clean off-white background */
+    margin: 0;
+    padding: 40px 20px;
+    color: #333;
+}
+
+/* Page Container Layout */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Header Elements styling */
+.header-container {
+    margin-bottom: 30px;
+}
+
+.btn-back {
+    display: inline-block;
+    color: #555;
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 15px;
+    transition: color 0.2s ease;
+}
+
+.btn-back:hover {
+    color: #000;
+    text-decoration: underline;
+}
+
+.club-title {
+    font-size: 28px;
+    margin: 0 0 5px 0;
+    color: #222;
+}
+
+.club-subtitle {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+}
+
+/* FAQ Card Wrapper matching your card blocks */
+.faq-wrapper {
+    background-color: #939393; /* Matches your sidebar background color */
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Individual Accordion Items */
+.faq-item {
+    background-color: #7b7b7b; /* Slightly darker inner gray block for contrast */
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    transition: background-color 0.2s ease;
+}
+
+.faq-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Question Bar (Clickable region) */
+.faq-question {
+    padding: 18px 20px;
+    font-weight: bold;
+    color: #ffffff;
+    cursor: pointer;
+    list-style: none; /* Removes native HTML arrow */
+    position: relative;
+    outline: none;
+}
+
+/* Custom interactive indicator arrow */
+.faq-question::after {
+    content: '▼';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #ddd;
+    transition: transform 0.2s ease;
+}
+
+/* Rotates the arrow when accordion block is open */
+.faq-item[open] .faq-question::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+/* Hover style for interactivity */
+.faq-question:hover {
+    background-color: #6e6e6e;
+}
+
+/* Answer Drawer Panel Box */
+.faq-answer {
+    background-color: #ffffff; /* Bright white interior for easy content reading */
+    padding: 20px;
+    border-top: 1px solid #ddd;
+    color: #333;
+    line-height: 1.5;
+}
+
+.faq-answer p {
+    margin: 0;
+}
+
+/* Bottom Safety Net Help Box */
+.fallback-box {
+    background-color: #e2e2e2;
+    border: 2px dashed #939393;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 30px;
+}
+
+.fallback-box h3 {
+    margin: 0 0 8px 0;
+    color: #222;
+}
+
+.fallback-box p {
+    margin: 0;
+    color: #555;
+}
+
+.fallback-box a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+.fallback-box a:hover {
+    text-decoration: underline;
+}
