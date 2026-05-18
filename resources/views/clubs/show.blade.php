@@ -58,14 +58,20 @@
         <img src="{{ asset('images/' . $club->profile_picture) }}" class="club-image-rect" alt="{{ $club->name }}">
         <p class="club-description">{{ $club->description }}</p>
 
-        <a href="{{ route('posts.create', $club->id) }}" class="btn-blue">Create Post</a>
-        <a href="{{ route('events.create', ['club' => $club->id]) }}" class="btn-green">Add Event</a>
-        <a href="{{ route('clubs.edit', $club->id) }}" class="btn-yellow">Edit Club</a>
-        <form action="{{ route('clubs.destroy', $club->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this club?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn-red">Delete</button>
-        </form>
+
+        @auth
+            <a href="{{ route('posts.create', $club->id) }}" class="btn-blue">Create Post</a>
+            <a href="{{ route('events.create', ['club' => $club->id]) }}" class="btn-green">Add Event</a>
+            <a href="{{ route('clubs.edit', $club->id) }}" class="btn-yellow">Edit Club</a>
+            @if (auth()->user()->role === \App\Enums\ClubRole::PRESIDENT || auth()->user()->is_admin )
+                <form action="{{ route('clubs.destroy', $club->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this club?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn-red">Delete Club</button>
+                </form>
+            @endif
+
+        @endauth
     </div>
 
     <!-- Club Content -->

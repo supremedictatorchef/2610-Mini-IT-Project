@@ -87,13 +87,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         posts.store
     */
 
-    // Route for creating clubs
+    // Route for create clubs
     Route::get('/create-clubs', [ClubController::class, 'create'])->name('create-clubs.create');
     Route::post('/create-clubs', [ClubController::class, 'store'])->name('create-clubs.store');
 
     // Route for edit club // huh? -lzh
     Route::get('/create-clubs/{club}/edit', [ClubController::class, 'edit'])->name('create-clubs.edit');
 });
+
 
 
 //Committee page 

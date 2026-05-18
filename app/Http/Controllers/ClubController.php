@@ -32,6 +32,7 @@ class ClubController extends Controller
     // Show a single club page
     public function show(Club $club)
     {
+        $user = Auth::user();
         $club->load(['posts', 'events']);
         return view('clubs.show', compact('club'));
     }
@@ -52,7 +53,7 @@ class ClubController extends Controller
             'banner' => 'nullable|image',
             'registration_link' => 'nullable|url',
             'registration_open' => 'sometimes',
-            'theme' => 'required|string',
+            'theme' => 'required|string'
         ]);
         
         if ($request->hasFile('profile_picture')) {
@@ -68,6 +69,7 @@ class ClubController extends Controller
     
     public function destroy($id)
     {
+
         $club = Club::findOrFail($id);
         $club->delete();
 
@@ -130,6 +132,7 @@ class ClubController extends Controller
         'registration_link' => 'nullable|url',
         'registration_open' => 'sometimes',
         'theme' => 'required|string'
+  
         ]);
 
 
@@ -144,7 +147,7 @@ class ClubController extends Controller
 
         Club::create($validated);
 
-        return redirect()->route('navigation')
+        return redirect()->route('clubs.index')
                         ->with('success', 'Club created successfully!');
     }
 
