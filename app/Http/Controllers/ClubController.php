@@ -12,6 +12,15 @@ use Illuminate\Support\Facades\DB;
 
 class ClubController extends Controller
 {
+    private function authorizeCommittee(Club $club)
+    {
+        $membership = $club->users()->where('user_id', Auth::id())->first();
+
+        if (!$membership || $membership->pivot->role !== ClubRole::COMMITTEE->value) {
+            abort(403, 'Unauthorized action. Only committee members can manage this club.');
+        }
+    }
+
     // --------------------------
     // Homepage: list all clubs and posts
     // --------------------------
@@ -45,6 +54,7 @@ class ClubController extends Controller
     // --------------------------
     public function edit(Club $club)
     {
+        $this->authorizeCommittee($club);
         return view('create-clubs.edit', compact('club'));
     }
 
@@ -87,17 +97,17 @@ class ClubController extends Controller
     }
 
     public function updateContact(Request $request, Club $club)
-{
-    $validated = $request->validate([
-        'email' => 'nullable|email',
-        'instagram' => 'nullable|string|max:255',
-        'website' => 'nullable|url',
-    ]);
+    {
+        $validated = $request->validate([
+            'email' => 'nullable|email',
+            'instagram' => 'nullable|string|max:255',
+            'website' => 'nullable|url',
+        ]);
 
-    $club->update($validated);
+        $club->update($validated);
 
-    return redirect()->back()->with('success', 'Contact info updated successfully!');
-}
+        return redirect()->back()->with('success', 'Contact info updated successfully!');
+    }
 
 
     // --------------------------
@@ -218,41 +228,41 @@ class ClubController extends Controller
     // Add committee member
     // --------------------------
     public function addCommitteeMember(Request $request, Club $club)
-{
-    $data = $request->validate([
-        'user_id'       => 'required|exists:users,id',
-        'role'          => 'required|string|max:255',
-        'profile_picture' => 'nullable|image',
-    ]);
+    {
+        $data = $request->validate([
+            'user_id'       => 'required|exists:users,id',
+            'role'          => 'required|string|max:255',
+            'profile_picture' => 'nullable|image',
+        ]);
 
-    if ($request->hasFile('profile_picture')) {
-        $data['profile_picture'] = $request->file('profile_picture')->store('committee', 'public');
-    } else {
-        // ✅ Default image path
-        $data['profile_picture'] = 'images/mmu.png';
+        if ($request->hasFile('profile_picture')) {
+            $data['profile_picture'] = $request->file('profile_picture')->store('committee', 'public');
+        } else {
+            // ✅ Default image path
+            $data['profile_picture'] = 'images/mmu.png';
+        }
+
+        $user = \App\Models\User::find($data['user_id']);
+
+        DB::table('committee_members')->insert([
+            'club_id'        => $club->id,
+            'name'           => $user->name,
+            'role'           => $data['role'],
+            'profile_picture'=> $data['profile_picture'],
+            'status'         => 'pending',
+            'created_at'     => now(),
+            'updated_at'     => now(),
+        ]);
+
+        $user->notify(new ClubNotification(
+            $club,
+            "You've been invited to join {$club->name} committee as {$data['role']}.",
+            'committee'
+        ));
+
+        return redirect()->route('clubs.committee', $club->id)
+                        ->with('success', 'Invitation sent successfully!');
     }
-
-    $user = \App\Models\User::find($data['user_id']);
-
-    DB::table('committee_members')->insert([
-        'club_id'        => $club->id,
-        'name'           => $user->name,
-        'role'           => $data['role'],
-        'profile_picture'=> $data['profile_picture'],
-        'status'         => 'pending',
-        'created_at'     => now(),
-        'updated_at'     => now(),
-    ]);
-
-    $user->notify(new ClubNotification(
-        $club,
-        "You've been invited to join {$club->name} committee as {$data['role']}.",
-        'committee'
-    ));
-
-    return redirect()->route('clubs.committee', $club->id)
-                     ->with('success', 'Invitation sent successfully!');
-}
 
     // --------------------------
     // Respond to committee invite
@@ -274,31 +284,31 @@ class ClubController extends Controller
     }
 
     public function updateCommitteeMember(Request $request, Club $club, $id)
-{
-    $data = $request->validate([
-        'role' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'profile_picture' => 'nullable|image|max:2048',
-    ]);
+    {
+        $data = $request->validate([
+            'role' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'profile_picture' => 'nullable|image|max:2048',
+        ]);
 
-    $updateData = [
-        'role' => $data['role'],
-        'description' => $data['description'] ?? null,
-        'updated_at' => now(),
-    ];
+        $updateData = [
+            'role' => $data['role'],
+            'description' => $data['description'] ?? null,
+            'updated_at' => now(),
+        ];
 
-    if ($request->hasFile('profile_picture')) {
-        $updateData['profile_picture'] = $request->file('profile_picture')->store('committee', 'public');
+        if ($request->hasFile('profile_picture')) {
+            $updateData['profile_picture'] = $request->file('profile_picture')->store('committee', 'public');
+        }
+
+        DB::table('committee_members')
+            ->where('id', $id)
+            ->where('club_id', $club->id)
+            ->update($updateData);
+
+        return redirect()->route('clubs.committee', $club->id)
+                        ->with('success', 'Profile updated successfully!');
     }
-
-    DB::table('committee_members')
-        ->where('id', $id)
-        ->where('club_id', $club->id)
-        ->update($updateData);
-
-    return redirect()->route('clubs.committee', $club->id)
-                     ->with('success', 'Profile updated successfully!');
-}
 
 
 
@@ -312,17 +322,49 @@ class ClubController extends Controller
     }
 
    // Chatroom fucntion 
-public function chatroom(Club $club)
-{
-    $messages = $club->messages()
-        ->with('user') // critical: ensures $message->user is populated
-        ->orderBy('created_at')
-        ->get();
+    public function chatroom(Club $club)
+    {
+        $messages = $club->messages()
+            ->with('user') // critical: ensures $message->user is populated
+            ->orderBy('created_at')
+            ->get();
 
-    return view('clubs.chatroom', compact('club', 'messages'));
-}
+        return view('clubs.chatroom', compact('club', 'messages'));
+    }
 
+    //Public Display Method
+    public function faqView($id)
+    {
+        $club = Club::findOrFail($id);
 
+        // Check if the current user is a committee member of THIS club
+        $isCommittee = false;
+        if (Auth::check()) {
+            $membership = $club->users()->where('user_id', Auth::id())->first();
+            $isCommittee = $membership && $membership->pivot->role === ClubRole::COMMITTEE->value;
+        }
+        
+        // Pass $isCommittee safely down into the view template
+        return view('clubs.faq', compact('club', 'isCommittee'));
+    }
 
+    public function updateFaq(Request $request, $id)
+    {
+        $club = Club::findOrFail($id);
+
+        $this->authorizeCommittee($club);
+
+        $request->validate([
+            'faq' => 'nullable|array',
+            'faq.*.question' => 'required|string',
+            'faq.*.answer' => 'required|string',
+        ]);
+
+        $club->faq = $request->input('faq', []); 
+        $club->save();
+
+        // Redirect them straight back to the view-only page with the success confirmation!
+        return redirect()->route('clubs.faq.view', $club->id)->with('success', 'FAQs updated successfully!');
+    }
 
 }
