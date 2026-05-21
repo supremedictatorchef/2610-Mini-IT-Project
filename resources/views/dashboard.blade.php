@@ -3,7 +3,7 @@
 @section('content')
 <style>
     main {
-        padding-top: 20px; /* reduced so content sits closer to nav */
+        padding-top: 20px;
     }
 
     .club-card,
@@ -29,19 +29,19 @@
         text-decoration: none;
     }
 
-    .btn:hover {
-        background: #1e40af;
-    }
+    .btn:hover { background: #1e40af; }
 
     .profile-container {
         max-width: 600px;
-        margin: 10px auto; /* reduced margin so it sits higher */
+        margin: 10px auto;
         background: grey;
         border-radius: 10px;
         padding: 30px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         text-align: center;
+        position: relative;
     }
+
     .profile-container img {
         width: 120px;
         height: 120px;
@@ -49,15 +49,18 @@
         object-fit: cover;
         margin-bottom: 20px;
     }
+
     .profile-container h2 {
         font-size: 1.8rem;
         font-weight: bold;
         margin-bottom: 10px;
     }
+
     .profile-container p {
         color: white;
         margin-bottom: 20px;
     }
+
     .profile-container input {
         width: 100%;
         padding: 10px;
@@ -65,33 +68,54 @@
         border-radius: 6px;
         border: 1px solid #ccc;
     }
+
     .profile-container .btn {
         background: #2563eb;
         padding: 10px 18px;
         margin: 5px;
     }
-    .profile-container .btn:hover {
-        background: #1e40af;
-    }
-    .logout-btn {
-        background: #dc2626;
-    }
-    .logout-btn:hover {
-        background: #b91c1c;
-    }
+
+    .profile-container .btn:hover { background: #1e40af; }
+
+    .logout-btn { background: #dc2626; }
+    .logout-btn:hover { background: #b91c1c; }
 
     .sub-header {
         display:flex;
         justify-content:center;
         align-items:center;
-        margin-top:10px;   /* sits closer to nav */
+        margin-top:10px;
         margin-bottom:15px;
     }
+
     .sub-header h1 {
         font-size: 2rem;
         font-weight: bold;
         margin:0;
     }
+
+    .icon-bar {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .edit-icon,
+    .delete-icon {
+        background-color: transparent;
+        border: none;
+        font-size: 22px;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .edit-icon { color: #1a73e8; }
+    .edit-icon:hover { color: #4dabf7; }
+
+    .delete-icon { color: #e63946; }
+    .delete-icon:hover { color: #ff6b6b; }
 </style>
 
 <div class="min-h-screen bg-gray-100 flex flex-col">
@@ -103,16 +127,26 @@
 
     <!-- Profile Card -->
     <div class="profile-container">
-        <img src="{{ Auth::user()->profile_picture 
-                     ? asset('storage/' . Auth::user()->profile_picture) 
-                     : asset('images/default-avatar.png') }}" 
-             alt="Profile Picture">
+        <div class="icon-bar">
+            <button class="edit-icon" id="edit-profile">✏️</button>
+            <form method="POST" action="{{ route('users.destroy', Auth::user()->id) }}" 
+                  onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="delete-icon">🗑️</button>
+            </form>
+        </div>
 
-        <h2>{{ Auth::user()->name }}</h2>
-        <p>{{ Auth::user()->email }}</p>
+        <!-- Public View -->
+        <div id="profile-view">
+          <img src="{{ Auth::user()->profile_picture ?? asset('images/mmu.png') }}" alt="Profile Picture">
 
-        <!-- Inline Edit Form -->
-        <form method="POST" action="{{ route('dashboard.update') }}" enctype="multipart/form-data">
+            <h2>{{ Auth::user()->name }}</h2>
+            <p>{{ Auth::user()->email }}</p>
+        </div>
+
+        <!-- Edit Form (hidden by default) -->
+        <form id="profile-edit" method="POST" action="{{ route('dashboard.update') }}" enctype="multipart/form-data" style="display:none;">
             @csrf
             @method('PATCH')
 
@@ -121,6 +155,7 @@
             <input type="file" name="profile_picture">
 
             <button type="submit" class="btn">Save Changes</button>
+            <button type="button" class="btn logout-btn" id="cancel-edit">Cancel</button>
         </form>
 
         <!-- Logout -->
@@ -152,32 +187,45 @@
                 </div>
             </section>
 
-            
-          <!-- Events Section -->
-<section>
-    <h2 class="text-xl font-bold mb-4">Your Events</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse($events as $event)
-            <div class="event-sticker 
-                {{ \Carbon\Carbon::parse($event->date)->isPast() && !\Carbon\Carbon::parse($event->date)->isToday() 
-                    ? 'event-passed' 
-                    : 'event-upcoming' }}">
-                <h3 class="text-xl font-bold">{{ $event->title }}</h3>
-                <p class="text-gray-600">
-                    {{ \Carbon\Carbon::parse($event->date)->format('d M Y') }}
-                    @if($event->time) at {{ $event->time }} @endif
-                </p>
-                <p class="text-gray-500">{{ $event->location ?? 'No location set' }}</p>
-            </div>
-        @empty
-            <div class="event-sticker event-upcoming text-gray-600">
-                <p>No events yet. Future events will appear here.</p>
-            </div>
-        @endforelse
-    </div>
-</section>
-
+            <!-- Events Section -->
+            <section>
+                <h2 class="text-xl font-bold mb-4">Your Events</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @forelse($events as $event)
+                        <div class="event-card 
+                            {{ \Carbon\Carbon::parse($event->date)->isPast() && !\Carbon\Carbon::parse($event->date)->isToday() 
+                                ? 'event-passed' 
+                                : 'event-upcoming' }}">
+                            <h3 class="text-xl font-bold">{{ $event->title }}</h3>
+                            <p class="text-gray-600">
+                                {{ \Carbon\Carbon::parse($event->date)->format('d M Y') }}
+                                @if($event->time) at {{ $event->time }} @endif
+                            </p>
+                            <p class="text-gray-500">{{ $event->location ?? 'No location set' }}</p>
+                        </div>
+                    @empty
+                        <div class="event-card text-gray-600">
+                            <p>No events yet. Future events will appear here.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </section>
         </div>
     </main>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#edit-profile').on('click', function() {
+        $('#profile-view').hide();
+        $('#profile-edit').show();
+    });
+
+    $('#cancel-edit').on('click', function() {
+        $('#profile-edit').hide();
+        $('#profile-view').show();
+    });
+});
+</script>
 @endsection

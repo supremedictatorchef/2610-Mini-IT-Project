@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('time');    // separate time
             $table->string('location')->nullable();
 
+              $table->json('uploads')->nullable();
+
             $table->foreignId('club_id')->constrained()->cascadeOnDelete();
 
             $table->softDeletes();

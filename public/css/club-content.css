@@ -26,21 +26,27 @@ body{
 }
 
 /* Banner */
-.club-banner-placeholder {
-    width: 100%;
-    height: 200px;
-    background: #999999 url("https://via.placeholder.com/1200x200/999999/333333?text=Club+Banner") no-repeat center center;
-    background-size: cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: bold;
-    margin-bottom: 20px;
-    border-radius: 8px;
+.club-banner {
+    width: 100uv;
+    height: 200px; /* ✅ same slim height as your header */
+    overflow: hidden;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    left: 0;
 }
+
+.banner-img {
+    width: 100%;
+    height: 100%; /* ✅ fills the 60px container */
+    object-fit: cover;
+    object-position: center;
+}
+
+
+
+
+
 
 /* Grey Blocks & Info Cards */
 .club-section, .info-card {
@@ -303,3 +309,76 @@ body{
     color: #333;
     font-weight: 500;
 }
+
+.info-card {
+    background: grey;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    position: relative;
+}
+.icon-bar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+.edit-icon {
+    background-color: transparent;
+    border: none;
+    color: #1a73e8;
+    font-size: 22px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+.edit-icon:hover { color: #4dabf7; }
+.btn {
+    background: #2563eb;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+.btn:hover { background: #1e40af; }
+.logout-btn {
+    background: #dc2626;
+}
+.logout-btn:hover {
+    background: #b91c1c;
+}
+.link-text {
+    color: white;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+
+.info-card {
+    background-color: #6c6c6c;
+    color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    text-align: center;
+}
+.info-card h4 {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.info-card p {
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+.info-card .btn-primary {
+    background-color: #1a73e8;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.info-card .btn-primary:hover {
+    opacity: 0.9;
+}
+

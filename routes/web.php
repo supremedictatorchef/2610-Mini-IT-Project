@@ -7,6 +7,8 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Models\Event;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\MessageController;
 
 
 /*
@@ -37,10 +39,16 @@ Route::get('/clubs/{club}', [ClubController::class, 'show'])->name('clubs.show')
 | Authenticated Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     // Dashboard - shows profile + followed clubs/events
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
     Route::patch('/dashboard', [UserController::class, 'updateProfile'])->name('dashboard.update');
+    Route::delete('/users/{user}', [App\Http\Controllers\UserController::class, 'destroy'])
+    ->name('users.destroy');
+
+    //FAQ SECTION
+    Route::post('/clubs/{club}/contact', [ClubController::class, 'updateContact'])
+    ->name('clubs.updateContact');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -48,7 +56,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Notifications Feed
-    Route::get('/notifications', fn() => auth()->user()->notifications)->name('notifications.index');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::post('/notifications/{id}/read', function ($id) {
+    $notification = auth()->user()->notifications()->findOrFail($id);
+    $notification->markAsRead(); // sets read_at timestamp
+    return response()->json(['success' => true]);
+});
+
 
     // Notifications/Notify Logic
     Route::get('/clubs/{club}/notify', [ClubController::class, 'showNotifyForm'])->name('clubs.notify.form');
@@ -73,19 +90,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::put('/clubs/{club}/events/{event}', [EventController::class, 'update'])->name('events.update');
     Route::delete('/clubs/{club}/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
-    Route::patch('/clubs/{club}/events/{event}/passed', [EventController::class, 'markPassed'])->name('events.markPassed');
+    Route::post('/events/{event}/upload-files', [EventController::class, 'uploadFiles'])->name('events.uploadFiles');
+    Route::get('/events/{event}/uploads', [EventController::class, 'viewUploads'])
+     ->name('events.viewUploads');
+     // Delete a single photo from an event
+    Route::delete('/events/{event}/delete-photo', [EventController::class, 'deletePhoto'])
+     ->name('events.deletePhoto');
 
-    Route::resource('posts', PostController::class); // do not remove this
-    /* DO NO manually define 
-        posts.edit
-        posts.update
-        posts.destroy
-    */ 
 
-    /* Route::resource() already creates
-        posts.create
-        posts.store
-    */
+// Posts nested under clubs
+Route::get('/clubs/{club}/posts/create', [PostController::class, 'create'])->name('posts.create');
+Route::post('/clubs/{club}/posts', [PostController::class, 'store'])->name('posts.store');
+
+// Keep other post routes (edit, update, destroy, show) and post like route
+Route::resource('posts', PostController::class)->except(['create', 'store']);
+Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
 
     // Route for create clubs
     Route::get('/create-clubs', [ClubController::class, 'create'])->name('create-clubs.create');
@@ -101,5 +120,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/clubs/{club}/committee', [ClubController::class, 'committee'])->name('clubs.committee');
 Route::post('/clubs/{club}/committee', [ClubController::class, 'addCommitteeMember'])->name('clubs.committee.add');
 Route::delete('/clubs/{club}/committee/{id}', [ClubController::class, 'removeCommitteeMember'])->name('clubs.committee.remove');
+Route::get('/users/search', [UserController::class, 'search'])->name('users.search');
+Route::get('/committee/search', [ClubController::class, 'searchCommittee'])->name('committee.search');
+Route::post('/clubs/{club}/invite/respond', [ClubController::class, 'respondToInvite'])
+     ->name('committee.invite.respond');
+Route::put('/clubs/{club}/committee/{id}/update', [App\Http\Controllers\ClubController::class, 'updateCommitteeMember'])
+    ->name('clubs.committee.update');
+
+ //Club Chatroom Page
+Route::get('/clubs/{club}/chatroom', [App\Http\Controllers\ClubController::class, 'chatroom'])
+     ->name('clubs.chatroom');
+     Route::post('/clubs/{club}/messages', [MessageController::class, 'store'])
+    ->name('clubs.messages.store');
+    Route::delete('/messages/{message}', [MessageController::class, 'destroy'])->name('messages.destroy');
+
+
+
 
 require __DIR__ . '/auth.php';
