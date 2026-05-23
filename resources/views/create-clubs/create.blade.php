@@ -1,3 +1,8 @@
+@php
+    $themes = config('themes');
+@endphp
+
+
 <x-top-nav>
 </x-top-nav>
 
@@ -56,6 +61,18 @@
                 <option value="Recreational / Physical Activities Clubs">Recreational / Physical Activities Clubs</option>
             </select>
         </div>
+
+        <div class="form-group-clubs">
+                <label for="theme">Theme</label><br>
+                <select name="theme" id="theme">
+                     @foreach($themes as $themeName => $theme)
+                        <option value="{{ $themeName }}"
+                            {{ $club->theme == $themeName ? 'selected' : '' }}>
+                            {{ $themeName }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
         <button type="submit" class="btn-submit-clubs">Create Club</button>
     </form>

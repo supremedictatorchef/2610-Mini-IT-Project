@@ -15,7 +15,7 @@ use Illuminate\Notifications\Notifiable;
 
 #[Fillable(['name', 'email', 'password', 'is_admin', 'status', 'verification'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
@@ -38,11 +38,17 @@ class User extends Authenticatable implements MustVerifyEmail
     // Relationships
     // --------------------------
 
+    /**
+     * Memberships for clubs (pivot table).
+     */
     public function memberships(): HasMany
     {
         return $this->hasMany(Membership::class, 'user_id');
     }
 
+    /**
+     * Clubs the user belongs to.
+     */
     public function clubs(): BelongsToMany
     {
         return $this->belongsToMany(Club::class, 'memberships')
@@ -50,14 +56,26 @@ class User extends Authenticatable implements MustVerifyEmail
             ->withTimestamps();
     }
 
+    /**
+     * Clubs owned by the user.
+     */
     public function ownedClubs(): HasMany
     {
         return $this->hasMany(Club::class, 'owner_id');
     }
 
+    /**
+     * All events across clubs the user is a member of.
+     */
     public function getEventsAttribute()
-  
     {
         return $this->clubs()->with('events')->get()->pluck('events')->flatten();
     }
+
+   public function getProfilePictureAttribute($value)
+{
+    return $value ? asset('storage/' . $value) : asset('images/mmu.png');
+}
+
+
 }

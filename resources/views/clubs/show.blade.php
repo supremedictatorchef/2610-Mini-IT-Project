@@ -22,9 +22,16 @@
 
 @section('content')
     <!-- Sub-header -->
-    <div class="club-banner-placeholder">
-    <h2>{{ $club->name }}</h2>
-    </div>
+   <div class="club-banner">
+    @if($club->banner_image)
+        <img src="{{ asset('storage/' . $club->banner_image) }}" alt="{{ $club->name }} Banner" class="banner-img">
+    @else
+        <div class="club-banner-placeholder">
+            <h2>{{ $club->name }}</h2>
+        </div>
+    @endif
+</div>
+
 
     <div class="sub-header" style="display:flex; justify-content:space-between; align-items:center;">
         <div style="flex:1;"></div>
@@ -58,14 +65,20 @@
         <img src="{{ asset('images/' . $club->profile_picture) }}" class="club-image-rect" alt="{{ $club->name }}">
         <p class="club-description">{{ $club->description }}</p>
 
-        <a href="{{ route('posts.create', $club->id) }}" class="btn-blue">Create Post</a>
-        <a href="{{ route('events.create', ['club' => $club->id]) }}" class="btn-green">Add Event</a>
-        <a href="{{ route('clubs.edit', $club->id) }}" class="btn-yellow">Edit Club</a>
-        <form action="{{ route('clubs.destroy', $club->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this club?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn-red">Delete</button>
-        </form>
+
+        @auth
+            <a href="{{ route('posts.create', $club->id) }}" class="btn-blue">Create Post</a>
+            <a href="{{ route('events.create', ['club' => $club->id]) }}" class="btn-green">Add Event</a>
+            <a href="{{ route('clubs.edit', $club->id) }}" class="btn-yellow">Edit Club</a>
+            @if (auth()->user()->role === \App\Enums\ClubRole::PRESIDENT || auth()->user()->is_admin )
+                <form action="{{ route('clubs.destroy', $club->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this club?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn-red">Delete Club</button>
+                </form>
+            @endif
+
+        @endauth
     </div>
 
     <!-- Club Content -->
@@ -125,20 +138,25 @@
                                         <tbody>
                                             @foreach($club->events as $event)
                                                 <tr>
-                                                    <td>{{ $event->title }}</td>
-                                                    <td>{{ $event->date }}</td>
-                                                    <td>{{ $event->time }}</td>
-                                                    <td>
-                                                        <input type="url" 
-                                                            value="{{ $event->drive_link ?? '' }}" 
-                                                            placeholder="Paste Drive link..." 
-                                                            onchange="updateDriveLink({{ $event->id }}, this.value)" 
-                                                            class="inline-input" />
-                                                        @if($event->drive_link)
-                                                            <a href="{{ $event->drive_link }}" target="_blank" class="btn-blue" stlye=margin-left:5px>
-                                                                View</a>
+                                                  <td>{{ $event->title }}</td>
+                                                  <td>{{ $event->time }}</td>
+                                                  <td>{{ $event->time }}</td>
+
+                                                <td>
+                                                        <form action="{{ route('events.uploadFiles', $event->id) }}" method="POST" enctype="multipart/form-data">
+                                                            @csrf
+                                                            <input type="file" name="event_files[]" multiple class="inline-input" />
+                                                            <button type="submit" class="btn-blue" style="margin-left:5px;">Upload</button>
+                                                        </form>
+
+                                                        @if($event->uploads)
+                                                            <a href="{{ route('events.viewUploads', $event->id) }}" 
+                                                            class="btn-green" style="margin-left:5px;" target="_blank">
+                                                            View Photos
+                                                            </a>
                                                         @endif
                                                     </td>
+
                                                     <td class="action-cell">
                                                         <a href="{{ route('events.edit', ['club' => $club->id, 'event' => $event->id]) }}" class="btn-green">Edit</a>
                                                         <form action="{{ route('events.destroy', ['club' => $club->id, 'event' => $event->id]) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this event?')">
@@ -187,13 +205,62 @@
                 <a href="/clubs/{{ $club->id }}/committee" class="link-text">View Committee Members</a>
             </div>
 
-            <div class="info-card">
-                <h4>Contact & FAQ</h4>
-                <p><strong>Email:</strong> {{ $club->email ?? 'N/A' }}</p>
-                <a href="#faq" class="link-text">Frequently Asked Questions</a>
-            </div>
-        </div>
+<!-- CONTACT & FAQ CARD -->
+<div class="info-card contact-card">
+    <div class="icon-bar">
+        <button class="edit-icon" id="edit-contact">✏️</button>
     </div>
+
+    <!-- Public View -->
+    <div id="contact-view">
+        <h4>Contact & FAQ</h4>
+        <p><strong>Email:</strong> {{ $club->email ?? 'N/A' }}</p>
+        <p><strong>Instagram:</strong> {{ $club->instagram ?? 'N/A' }}</p>
+        <p><strong>Website:</strong> {{ $club->website ?? 'N/A' }}</p>
+        <a href="#faq" class="link-text">Frequently Asked Questions</a>
+    </div>
+
+    <!-- Edit Form (hidden by default) -->
+    <form id="contact-edit"
+          action="{{ route('clubs.updateContact', $club->id) }}"
+          method="POST"
+          style="display:none;">
+        @csrf
+        <input type="email" name="email" value="{{ old('email', $club->email) }}" placeholder="Club Email">
+        <input type="text" name="instagram" value="{{ old('instagram', $club->instagram) }}" placeholder="Instagram URL">
+        <input type="text" name="website" value="{{ old('website', $club->website) }}" placeholder="Website URL">
+
+        <button type="submit" class="btn">Save Changes</button>
+        <button type="button" class="btn logout-btn" id="cancel-contact">Cancel</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Show edit form
+    $('#edit-contact').on('click', function() {
+        $('#contact-view').hide();
+        $('#contact-edit').show();
+    });
+
+    // Cancel edit
+    $('#cancel-contact').on('click', function() {
+        $('#contact-edit').hide();
+        $('#contact-view').show();
+    });
+});
+</script>
+
+
+<!-- CLUB CHATROOM CARD -->
+<div class="info-card chatroom-card">
+    <h4>Club Chatroom</h4>
+    <p>Interact with other members in real time!</p>
+    <a href="{{ route('clubs.chatroom', $club->id) }}" class="btn btn-primary">Open Chatroom</a>
+</div>
+
+<!-- Theme preview -->
 
     <div id="preview-div">
         <div id="theme">
@@ -208,6 +275,8 @@
     </div>
     
 
+
+ <!-- script for JSON photo collection  for events -->
 @push('scripts')
 <script>
 function updateDriveLink(eventId, link) {

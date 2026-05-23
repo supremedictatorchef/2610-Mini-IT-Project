@@ -20,7 +20,9 @@ class Club extends Model
         'category', // need this, otherwise can't mass-assign categories.
         'profile_picture',
         'email',
-        'banner',
+        'instagram',
+        'website',
+        'banner_image',
         'registration_link',
         'registration_open',
         'theme'
@@ -68,11 +70,12 @@ class Club extends Model
      * The users that belong to the club.
      */
     public function users(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'memberships', 'club_id', 'user_id')
-                    ->withPivot('role', 'status', 'verification')
-                    ->withTimestamps(); // Use this if your pivot table has created_at/updated_at
-    }
+{
+    return $this->belongsToMany(User::class, 'memberships', 'club_id', 'user_id')
+                ->withPivot('role', 'status', 'verification')
+                ->withTimestamps();
+}
+
 
     /**
      * Relationship: Events hosted by this club.
@@ -98,10 +101,12 @@ class Club extends Model
     {
         return !is_null($this->owner_id);
     }
+    
+    public function messages()
+{
+    return $this->hasMany(Message::class);
+}
 
-    public function committee()
-    {
-        return $this->hasMany(\DB::table('committee')->getModel()); 
-    }
 
 }
+
