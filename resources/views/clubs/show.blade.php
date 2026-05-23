@@ -263,13 +263,34 @@ $(document).ready(function() {
 <!-- Theme preview -->
 
 <div id="preview-div">
-    
+    <div id="theme-menu">
+            <div>
+                
+            <form action="{{ route('clubs.updateTheme', $club->id) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+                 
+                <input type="hidden" name="theme" id="theme" value="{{ $club->theme }}">
+                     @foreach($themes as $themeName => $theme)
+                            <button type="button" name="btn-preview-theme" class="btn-preview-theme" 
+                            data-value="{{ $themeName }}" style="width:100px; 
+                            height:100px; background:linear-gradient({{ $theme['bg'] }}, 
+                            {{ $theme['content-box'] }});">
+                            </button>
+                    @endforeach
+            
+
+
+                <button type="submit" class="btn-submit">Update Club</button>
+            </form>
+            </div>
+        
+        </div>
+        
 
     <button id="preview-btn" onclick="openTheme()">
         <p id="theme-lbl">Theme</p>
-        <div id="theme-menu">
-                
-    </div>
+        
             
 
     </button>
@@ -306,6 +327,12 @@ function updateDriveLink(eventId, link) {
         }
     }
 
+document.querySelectorAll('.btn-preview-theme').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.getElementById('theme').value = btn.dataset.value;
+    });
+    
+});
 
 </script>
 @endpush
