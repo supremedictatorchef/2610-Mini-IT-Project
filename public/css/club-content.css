@@ -338,7 +338,7 @@ body{
     font-size: 1.2em;
 }
 
-#theme{
+#theme-menu{
     position: absolute;
     display: none;
     width: 500px;

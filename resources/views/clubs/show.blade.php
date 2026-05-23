@@ -263,7 +263,7 @@ $(document).ready(function() {
 <!-- Theme preview -->
 
     <div id="preview-div">
-        <div id="theme">
+        <div id="theme-menu">
                 
         </div>
 
