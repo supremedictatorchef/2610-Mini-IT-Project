@@ -115,11 +115,8 @@ Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.
 
     // Route for edit club // huh? -lzh
     Route::get('/create-clubs/{club}/edit', [ClubController::class, 'edit'])->name('create-clubs.edit');
-});
 
-
-
-//Committee page 
+    //Committee page 
 Route::get('/clubs/{club}/committee', [ClubController::class, 'committee'])->name('clubs.committee');
 Route::post('/clubs/{club}/committee', [ClubController::class, 'addCommitteeMember'])->name('clubs.committee.add');
 Route::delete('/clubs/{club}/committee/{id}', [ClubController::class, 'removeCommitteeMember'])->name('clubs.committee.remove');
@@ -137,7 +134,7 @@ Route::get('/clubs/{club}/chatroom', [App\Http\Controllers\ClubController::class
     ->name('clubs.messages.store');
     Route::delete('/messages/{message}', [MessageController::class, 'destroy'])->name('messages.destroy');
 
-
+});
 
 
 require __DIR__ . '/auth.php';

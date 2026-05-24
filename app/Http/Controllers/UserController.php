@@ -7,6 +7,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
 
 class UserController extends Controller
 {
@@ -130,14 +133,75 @@ class UserController extends Controller
     /**
      * Search users by name/email.
      */
-    public function search(Request $request)
-    {
-        $q = $request->input('q');
-        $users = User::where('name', 'like', "%{$q}%")
-            ->orWhere('email', 'like', "%{$q}%")
-            ->limit(10)
-            ->get(['id','name','email']);
+public function search(Request $request)
+{
+    $user = Auth::user();
+    $q = $request->input('q');
 
-        return response()->json($users);
+    if (!$q) {
+        return response()->json([
+            'results' => [],
+            'remaining' => 10
+        ]);
     }
+
+    // ✅ Only search registered members in users table
+    $users = User::where('name', 'like', "%{$q}%")
+        ->orWhere('email', 'like', "%{$q}%")
+        ->limit(10)
+        ->get();
+
+    // If not logged in, skip counter
+    if (!$user) {
+        return response()->json([
+            'results' => $users->map(fn($u) => [
+                'id' => $u->id,
+                'text' => $u->name . " (" . $u->email . ")"
+            ]),
+            'remaining' => 10
+        ]);
+    }
+
+    // Count searches today
+    $searchCount = DB::table('search_logs')
+        ->where('user_id', $user->id)
+        ->whereDate('created_at', Carbon::today())
+        ->count();
+
+    if ($searchCount >= 10) {
+        return response()->json([
+            'error' => 'Daily search limit reached (10).',
+            'remaining' => 0,
+            'results' => []
+        ], 429);
+    }
+
+    // Log attempt
+    DB::table('search_logs')->insert([
+        'user_id' => $user->id,
+        'query' => $q,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    $remaining = max(0, 10 - ($searchCount + 1));
+
+    return response()->json([
+        'results' => $users->map(fn($u) => [
+            'id' => $u->id,
+            'text' => $u->name . " (" . $u->email . ")"
+        ]),
+        'remaining' => $remaining
+    ]);
+}
+
+
+
+
+
+
+
+
+
+
 }

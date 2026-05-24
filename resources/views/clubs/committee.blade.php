@@ -169,6 +169,9 @@
                 <option value="">Search by name or email</option>
             </select>
 
+            <!-- ✅ Attempts counter -->
+            <div id="attempts-left" class="text-muted mt-2">Attempts left today: 10</div>
+
             <label>Role</label>
             <input type="text" name="role" class="form-control" placeholder="Enter role">
 
@@ -261,51 +264,54 @@
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <script>
-$(document).ready(function() {
-    // Select2 search
-    $('#member-search').select2({
-        placeholder: 'Search by name or email',
-        allowClear: true,
-        ajax: {
-            url: '{{ route("users.search") }}',
-            dataType: 'json',
-            delay: 250,
-            data: params => ({ q: params.term }),
-            processResults: data => ({
-                results: data.map(user => ({
-                    id: user.id,
-                    text: user.name + " (" + user.email + ")"
-                }))
-            }),
-            cache: true
-        },
-        minimumInputLength: 2
-    });
+$('#member-search').select2({
+    placeholder: 'Search by name or email',
+    allowClear: true,
+   ajax: {
+    url: '{{ route("users.search") }}',
+    dataType: 'json',
+    delay: 250,
+    data: params => ({ q: params.term }),
+    processResults: data => {
+        $('#attempts-left').text("Attempts left today: " + data.remaining);
+        return { results: data.results };
+    },
+    error: xhr => {
+        if (xhr.status === 429) {
+            const data = xhr.responseJSON;
+            alert(data.error || "Daily search limit reached.");
+            $('#attempts-left').text("Attempts left today: " + (data.remaining || 0));
+            $('#member-search').prop('disabled', true);
+        }
+    },
+    cache: true
+},
+    minimumInputLength: 2
+});
 
-    // Edit toggle
-    $('.edit-icon').on('click', function() {
-        const id = $(this).data('id');
-        $('#view-' + id).hide();
-        $('#edit-' + id).show();
-    });
 
-    $('.cancel-btn').on('click', function() {
-        const id = $(this).data('id');
-        $('#edit-' + id).hide();
-        $('#view-' + id).show();
-    });
+// Edit toggle
+$('.edit-icon').on('click', function() {
+    const id = $(this).data('id');
+    $('#view-' + id).hide();
+    $('#edit-' + id).show();
+});
 
-    //Drag and Drop Card
-   Sortable.create(document.getElementById('committee-list'), {
+$('.cancel-btn').on('click', function() {
+    const id = $(this).data('id');
+    $('#edit-' + id).hide();
+    $('#view-' + id).show();
+});
+
+// Drag and Drop Card
+Sortable.create(document.getElementById('committee-list'), {
     animation: 150,
     ghostClass: 'sortable-ghost',
     chosenClass: 'sortable-chosen',
-    filter: '.edit-icon, .delete-icon',   // prevent drag when clicking edit/delete
+    filter: '.edit-icon, .delete-icon',
     onFilter: function (evt) {
         evt.preventDefault();
     }
-});
-
 });
 </script>
 @endsection
