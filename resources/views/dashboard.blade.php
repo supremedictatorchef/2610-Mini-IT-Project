@@ -116,6 +116,16 @@
     .edit-icon { color: #1a73e8; }
     .edit-icon:hover { color: #4dabf7; }
 
+.event-upcoming {
+    background-color: #a7f3d0; 
+    color: black;
+}
+
+.event-passed {
+    background-color: #f87171; 
+    color: black;
+}
+
     .delete-icon { color: #e63946; }
     .delete-icon:hover { color: #ff6b6b; }
 </style>

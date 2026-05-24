@@ -8,6 +8,7 @@ use App\Enums\ClubRole;
 use App\Notifications\ClubNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class EventController extends Controller
 {
@@ -99,6 +100,21 @@ class EventController extends Controller
         return redirect()->route('clubs.show', $club->id)
                          ->with('success', 'Event deleted successfully!');
     }
+
+  
+
+public function pastEvents(Club $club)
+{
+    $today = Carbon::today();
+
+    $pastEvents = $club->events()
+        ->whereDate('date', '<', $today)
+        ->orderBy('date', 'desc')
+        ->get();
+
+    return view('events.past', compact('club', 'pastEvents'));
+}
+
 
     // ✅ Multiple file upload handler
     public function uploadFiles(Request $request, $eventId)
