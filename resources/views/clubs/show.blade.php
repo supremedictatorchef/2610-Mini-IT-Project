@@ -91,7 +91,7 @@
 
             <section class="club-section">
                 <!-- Posts Section -->
-                <div class="posts-section" style="margin-top:20px; display:block; width:100%;">
+                <div class="posts-section" style="margin-top:20px; display:block; width:100%;" id="posts-section">
                     <h2 class="posts-title">Posts</h2>
                     @forelse($club->posts as $post)
                         <div class="post-card">
@@ -119,8 +119,8 @@
             
             <section class="club-section">
                 <div class="club-main">
-                    <section class="club-section">
-                        <div class="events-section">
+                    <section class="club-section" >
+                        <div class="events-section" id="events-section" >
                             <h2 class="posts-title">Events</h2>
                             
                             @if($club->events->count())
@@ -181,6 +181,14 @@
 
         <div class="club-sidebar">
             <div class="info-card">
+                <div class="jump-btns">
+                    <a class="jump-anchor" href="#posts-section">View Posts</a>
+                    <a class="jump-anchor" href="#events-section">View Events</a>
+                </div>
+                
+                
+            </div>
+            <div class="info-card">
                 <h4>Membership</h4>
                 <p>Join us to get the latest updates and participate in exclusive events.</p>
                 
@@ -205,60 +213,62 @@
                 <a href="/clubs/{{ $club->id }}/committee" class="link-text">View Committee Members</a>
             </div>
 
-<!-- CONTACT & FAQ CARD -->
-<div class="info-card contact-card">
-    <div class="icon-bar">
-        <button class="edit-icon" id="edit-contact">✏️</button>
-    </div>
+        
 
-    <!-- Public View -->
-    <div id="contact-view">
-        <h4>Contact & FAQ</h4>
-        <p><strong>Email:</strong> {{ $club->email ?? 'N/A' }}</p>
-        <p><strong>Instagram:</strong> {{ $club->instagram ?? 'N/A' }}</p>
-        <p><strong>Website:</strong> {{ $club->website ?? 'N/A' }}</p>
-        <a href="#faq" class="link-text">Frequently Asked Questions</a>
-    </div>
+            <!-- CONTACT & FAQ CARD -->
+            <div class="info-card contact-card">
+                <div class="icon-bar">
+                    <button class="edit-icon" id="edit-contact">✏️</button>
+                </div>
 
-    <!-- Edit Form (hidden by default) -->
-    <form id="contact-edit"
-          action="{{ route('clubs.updateContact', $club->id) }}"
-          method="POST"
-          style="display:none;">
-        @csrf
-        <input type="email" name="email" value="{{ old('email', $club->email) }}" placeholder="Club Email">
-        <input type="text" name="instagram" value="{{ old('instagram', $club->instagram) }}" placeholder="Instagram URL">
-        <input type="text" name="website" value="{{ old('website', $club->website) }}" placeholder="Website URL">
+                <!-- Public View -->
+                <div id="contact-view">
+                    <h4>Contact & FAQ</h4>
+                    <p><strong>Email:</strong> {{ $club->email ?? 'N/A' }}</p>
+                    <p><strong>Instagram:</strong> {{ $club->instagram ?? 'N/A' }}</p>
+                    <p><strong>Website:</strong> {{ $club->website ?? 'N/A' }}</p>
+                    <a href="#faq" class="link-text">Frequently Asked Questions</a>
+                </div>
 
-        <button type="submit" class="btn">Save Changes</button>
-        <button type="button" class="btn logout-btn" id="cancel-contact">Cancel</button>
-    </form>
-</div>
+                <!-- Edit Form (hidden by default) -->
+                <form id="contact-edit"
+                    action="{{ route('clubs.updateContact', $club->id) }}"
+                    method="POST"
+                    style="display:none;">
+                    @csrf
+                    <input type="email" name="email" value="{{ old('email', $club->email) }}" placeholder="Club Email">
+                    <input type="text" name="instagram" value="{{ old('instagram', $club->instagram) }}" placeholder="Instagram URL">
+                    <input type="text" name="website" value="{{ old('website', $club->website) }}" placeholder="Website URL">
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function() {
-    // Show edit form
-    $('#edit-contact').on('click', function() {
-        $('#contact-view').hide();
-        $('#contact-edit').show();
-    });
+                    <button type="submit" class="btn">Save Changes</button>
+                    <button type="button" class="btn logout-btn" id="cancel-contact">Cancel</button>
+                </form>
+            </div>
 
-    // Cancel edit
-    $('#cancel-contact').on('click', function() {
-        $('#contact-edit').hide();
-        $('#contact-view').show();
-    });
-});
-</script>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+            $(document).ready(function() {
+                // Show edit form
+                $('#edit-contact').on('click', function() {
+                    $('#contact-view').hide();
+                    $('#contact-edit').show();
+                });
+
+                // Cancel edit
+                $('#cancel-contact').on('click', function() {
+                    $('#contact-edit').hide();
+                    $('#contact-view').show();
+                });
+            });
+            </script>
 
 
-<!-- CLUB CHATROOM CARD -->
-<div class="info-card chatroom-card">
-    <h4>Club Chatroom</h4>
-    <p>Interact with other members in real time!</p>
-    <a href="{{ route('clubs.chatroom', $club->id) }}" class="btn btn-primary">Open Chatroom</a>
-</div>
+            <!-- CLUB CHATROOM CARD -->
+            <div class="info-card chatroom-card">
+                <h4>Club Chatroom</h4>
+                <p>Interact with other members in real time!</p>
+                <a href="{{ route('clubs.chatroom', $club->id) }}" class="btn btn-primary">Open Chatroom</a>
+            </div>
 
 <!-- Theme preview -->
  @if (auth()->user()->role === \App\Enums\ClubRole::PRESIDENT || auth()->user()->role === \App\Enums\ClubRole::COMMITTEE || auth()->user()->is_admin )
@@ -351,9 +361,22 @@ document.querySelectorAll('.btn-preview-theme').forEach(btn => {
     
 });
 
+// 1. Select all matching links
+const links = document.querySelectorAll('.jump-anchor');
 
-
+// 2. Loop through each link in the list
+links.forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault(); // Stops URL from changing
     
+    const targetId = this.getAttribute('href'); 
+    const targetElement = document.querySelector(targetId);
+    
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
 
 </script>
 @endpush
