@@ -272,8 +272,14 @@ $(document).ready(function() {
                  
                 <input type="hidden" name="theme" id="theme" value="{{ $club->theme }}">
                      @foreach($themes as $themeName => $theme)
-                            <button type="button" name="btn-preview-theme" class="btn-preview-theme" 
-                            data-value="{{ $themeName }}" style="width:100px; 
+                            <button type="button" onclick="changeTheme()" name="btn-preview-theme" class="btn-preview-theme" 
+                            data-value="{{ $themeName }}" 
+                            data-bg =   "{{ $theme['bg'] }}"
+                            data-text = "{{ $theme['text'] }}"
+                            data-context = "{{ $theme['content-box'] }}"
+                            data-shadow="{{ $theme['shadow-color'] }}"
+                            data-post = "{{ $theme['post-colour'] }}"
+                            style="width:100px; 
                             height:100px; background:linear-gradient({{ $theme['bg'] }}, 
                             {{ $theme['content-box'] }});">
                             </button>
@@ -327,12 +333,25 @@ function updateDriveLink(eventId, link) {
         }
     }
 
+
+
 document.querySelectorAll('.btn-preview-theme').forEach(btn => {
     btn.addEventListener('click', () => {
         document.getElementById('theme').value = btn.dataset.value;
+
+        document.documentElement.style.setProperty('--bg', btn.dataset.bg);
+        document.documentElement.style.setProperty('--text', btn.dataset.text);
+        document.documentElement.style.setProperty('--content-box', btn.dataset.context);
+        document.documentElement.style.setProperty('--shadow-color', btn.dataset.shadow);
+        document.documentElement.style.setProperty('--post-colour', btn.dataset.post);
+
     });
     
 });
+
+
+
+    
 
 </script>
 @endpush
