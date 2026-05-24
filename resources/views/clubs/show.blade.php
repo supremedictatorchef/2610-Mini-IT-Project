@@ -263,14 +263,14 @@ $(document).ready(function() {
 <!-- Theme preview -->
 
 <div id="preview-div">
-    <div id="theme-menu">
+    <div id="theme-menu" style="position: relative;">
             <div>
                 
-            <form action="{{ route('clubs.updateTheme', $club->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('clubs.updateTheme', $club->id) }}" method="POST" enctype="multipart/form-data" >
                 @csrf
                 @method('PUT')
                  
-                <input type="hidden" name="theme" id="theme" value="{{ $club->theme }}">
+                <input type="hidden" name="theme" id="theme" value="{{ $club->theme }}" id="form-themes">
                      @foreach($themes as $themeName => $theme)
                             <button type="button" onclick="changeTheme()" name="btn-preview-theme" class="btn-preview-theme" 
                             data-value="{{ $themeName }}" 
@@ -279,15 +279,16 @@ $(document).ready(function() {
                             data-context = "{{ $theme['content-box'] }}"
                             data-shadow="{{ $theme['shadow-color'] }}"
                             data-post = "{{ $theme['post-colour'] }}"
-                            style="width:100px; 
-                            height:100px; background:linear-gradient({{ $theme['bg'] }}, 
+                            style="width:40px; 
+                            height:40px; border:black solid 1px; border-radius: 2em;
+                             margin:1em 0.5em; background:linear-gradient({{ $theme['bg'] }}, 
                             {{ $theme['content-box'] }});">
                             </button>
                     @endforeach
             
 
 
-                <button type="submit" class="btn-submit">Update Club</button>
+                <button type="submit" class="btn-submit" style="position: absolute; bottom:1em; right:0em; transform:scale(0.9);">Update Theme</button>
             </form>
             </div>
         

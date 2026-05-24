@@ -67,6 +67,8 @@ body{
     letter-spacing: 1px;
 }
 
+
+
 /* 2. POST CARD STYLES */
 .post-card {
     background-color: var(--post-colour); 
@@ -346,11 +348,21 @@ body{
     display: none;
     width: 500px;
     height: 300px;
-    background-color: white;
+    background-color:   white;
     border-radius: 1em;
     margin-bottom: 0.5em;
     
 }
+
+#form-themes{
+    display: flex;
+}
+
+.btn-preview-theme:hover{
+    cursor:pointer;
+}
+
+
 
 
 
