@@ -102,9 +102,16 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/clubs/{club}/posts/create', [PostController::class, 'create'])->name('posts.create');
 Route::post('/clubs/{club}/posts', [PostController::class, 'store'])->name('posts.store');
 
-// Keep other post routes (edit, update, destroy, show) and post like route
+// Other post routes
 Route::resource('posts', PostController::class)->except(['create', 'store']);
+
+// Likes + Comments
 Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
+Route::get('/posts/{post}/comments', [PostController::class, 'getComments']);
+Route::post('/posts/{post}/comment', [PostController::class, 'comment'])->name('posts.comment');
+
+
+
 
     // Route for create clubs
     Route::get('/create-clubs', [ClubController::class, 'create'])->name('create-clubs.create');
@@ -116,7 +123,7 @@ Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.
     // Route for edit club // huh? -lzh
     Route::get('/create-clubs/{club}/edit', [ClubController::class, 'edit'])->name('create-clubs.edit');
 
-    //Committee page 
+//Committee page 
 Route::get('/clubs/{club}/committee', [ClubController::class, 'committee'])->name('clubs.committee');
 Route::post('/clubs/{club}/committee', [ClubController::class, 'addCommitteeMember'])->name('clubs.committee.add');
 Route::delete('/clubs/{club}/committee/{id}', [ClubController::class, 'removeCommitteeMember'])->name('clubs.committee.remove');
