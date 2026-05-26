@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Product;
+use App\Models\Order;
 
 class OrderItem extends Model
 {
-    protected $fillable = ['order_id','product_id','quantity','price'];
+    protected $fillable = ['order_id', 'product_id', 'quantity', 'price'];
 
     public function product()
     {
@@ -18,3 +20,4 @@ class OrderItem extends Model
         return $this->belongsTo(Order::class);
     }
 }
+

@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Models\Club;    
+use App\Models\Club;
+ use App\Models\Treasurer;    
 
 class ProductController extends Controller
 {
@@ -59,10 +60,10 @@ class ProductController extends Controller
     }
 
     // Show product detail
-    public function show(Product $product)
-    {
-        return view('marketplace.show', compact('product'));
-    }
+   public function show(Product $product)
+{
+    return view('marketplace.show', compact('product'));
+}
 
     // Admin: edit product
     public function edit(Product $product)
@@ -88,4 +89,58 @@ class ProductController extends Controller
         return redirect()->route('clubs.marketplace', $clubId)
                          ->with('success','Product deleted!');
     }
+
+public function adminDashboard(Club $club)
+{
+    // Ensure treasurer record exists for this club
+    if (!$club->treasurer) {
+        Treasurer::create([
+            'club_id' => $club->id,
+            'name' => 'Default Treasurer',
+            'bank_name' => 'Not set',
+            'account_number' => 'Not set',
+            'qr_payment' => null,
+        ]);
+    }
+
+    $products = $club->products ?? collect();
+    $treasurer = $club->treasurer;
+
+    return view('marketplace.admin', compact('club', 'products', 'treasurer'));
+}
+
+
+
+public function updateTreasurer(Request $request, Club $club)
+{
+    $treasurer = $club->treasurer ?? new \App\Models\Treasurer(['club_id' => $club->id]);
+
+    $treasurer->name = $request->treasurer_name;
+    $treasurer->bank_name = $request->treasurer_bank;
+    $treasurer->account_number = $request->treasurer_account;
+
+    if ($request->hasFile('treasurer_qr')) {
+        $path = $request->file('treasurer_qr')->store('treasurer_qr', 'public');
+        $treasurer->qr_payment = $path;
+    }
+
+    $treasurer->save();
+
+    return response()->json(['success' => true]);
+}
+
+
+    public function sales(Product $product)
+{
+    // Get all order items for this product
+    $sales = $product->orderItems()->with('order')->latest()->get();
+
+    // Totals
+    $totalQuantity = $product->orderItems()->sum('quantity');
+    $totalRevenue  = $product->orderItems()->sum('amount');
+
+    return view('marketplace.sales', compact('product', 'sales', 'totalQuantity', 'totalRevenue'));
+}
+
+
 }

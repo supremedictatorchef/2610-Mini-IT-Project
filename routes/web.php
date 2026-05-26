@@ -10,7 +10,7 @@ use App\Models\Event;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProductController;
-
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,7 +33,6 @@ Route::get('/calendar', function () {
 Route::get('/clubs/search', [ClubController::class, 'search'])->name('clubs.search');
 Route::get('/clubs', [ClubController::class, 'list'])->name('clubs.index');
 Route::get('/clubs/{club}', [ClubController::class, 'show'])->name('clubs.show');
-
 
 /*
 |--------------------------------------------------------------------------
@@ -111,9 +110,6 @@ Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.
 Route::get('/posts/{post}/comments', [PostController::class, 'getComments']);
 Route::post('/posts/{post}/comment', [PostController::class, 'comment'])->name('posts.comment');
 
-
-
-
     // Route for create clubs
     Route::get('/create-clubs', [ClubController::class, 'create'])->name('create-clubs.create');
     Route::post('/create-clubs', [ClubController::class, 'store'])->name('create-clubs.store');
@@ -154,10 +150,18 @@ Route::post('/clubs/{club}/products', [ProductController::class, 'store'])
     ->name('products.store');
 
 Route::resource('products', ProductController::class)->except(['index','create','store']);
-Route::get('/cart', function () {
-    // You can pass products in cart from session later
-    return view('cart.index');
-})->name('cart.index');
+Route::get('/cart', function () { return view('cart.index');})->name('cart.index');
+Route::get('/clubs/{club}/marketplace/admin', [ProductController::class, 'adminDashboard'])->name('marketplace.admin');
+Route::get('/products/{product}/sales', [ProductController::class, 'sales']) ->name('products.sales');
+Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/products/{product}/payment', [PaymentController::class, 'create'])
+    ->name('payment.create');
+Route::post('/products/{product}/payment', [PaymentController::class, 'store'])->name('payment.store');
+Route::post('/clubs/{club}/treasurer/update', [ProductController::class, 'updateTreasurer'])
+    ->name('treasurer.update');
+    Route::get('/clubs/{club}/products/{product}/payment', [PaymentController::class, 'showPaymentForm'])
+    ->name('payment.show');
+
 
 
 

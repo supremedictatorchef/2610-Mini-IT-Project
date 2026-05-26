@@ -46,5 +46,6 @@ class OrderController extends Controller
     {
         return view('orders.show', compact('order'));
     }
+
 }
 
