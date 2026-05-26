@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->string('name')->nullable();
             $table->string('bank_name')->nullable();
             $table->string('account_number')->nullable();
-            $table->string('qr_payment')->nullable(); // store image path
+            $table->string('qr_payment')->nullable(); 
             $table->timestamps();
         });
     }

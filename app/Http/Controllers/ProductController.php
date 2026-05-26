@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Club;
- use App\Models\Treasurer;    
+use App\Models\Treasurer; 
+use App\Models\Order;   
 
 class ProductController extends Controller
 {
@@ -113,7 +114,7 @@ public function adminDashboard(Club $club)
 
 public function updateTreasurer(Request $request, Club $club)
 {
-    $treasurer = $club->treasurer ?? new \App\Models\Treasurer(['club_id' => $club->id]);
+    $treasurer = $club->treasurer ?? new Treasurer(['club_id' => $club->id]);
 
     $treasurer->name = $request->treasurer_name;
     $treasurer->bank_name = $request->treasurer_bank;
@@ -130,14 +131,14 @@ public function updateTreasurer(Request $request, Club $club)
 }
 
 
-    public function sales(Product $product)
+ public function sales(Product $product)
 {
-    // Get all order items for this product
-    $sales = $product->orderItems()->with('order')->latest()->get();
+    // Get all orders for this product
+    $sales = Order::where('product_id', $product->id)->latest()->get();
 
     // Totals
-    $totalQuantity = $product->orderItems()->sum('quantity');
-    $totalRevenue  = $product->orderItems()->sum('amount');
+    $totalQuantity = $sales->count(); // or sum('quantity') if you track quantity
+    $totalRevenue  = $sales->sum('total');
 
     return view('marketplace.sales', compact('product', 'sales', 'totalQuantity', 'totalRevenue'));
 }

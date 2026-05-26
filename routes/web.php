@@ -11,6 +11,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -161,6 +162,14 @@ Route::post('/clubs/{club}/treasurer/update', [ProductController::class, 'update
     ->name('treasurer.update');
     Route::get('/clubs/{club}/products/{product}/payment', [PaymentController::class, 'showPaymentForm'])
     ->name('payment.show');
+    Route::post('/products/{product}/payment', [PaymentController::class, 'store'])
+    ->name('products.payment');
+    Route::post('/products/{product}/payment', [PaymentController::class, 'store'])
+    ->name('payment.store');
+Route::post('/orders/{order}/verify', [OrderController::class, 'verify'])
+    ->name('orders.verify');
+
+
 
 
 

@@ -47,5 +47,11 @@ class OrderController extends Controller
         return view('orders.show', compact('order'));
     }
 
+     public function verify(Order $order)
+    {
+        $order->update(['verification_status' => 'verified']);
+
+        return back()->with('success', 'Order verified successfully!');
+    }
 }
 

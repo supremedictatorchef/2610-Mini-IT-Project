@@ -36,19 +36,30 @@ class PaymentController extends Controller
     /**
      * Store a submitted payment proof.
      */
-    public function store(Request $request, Product $product)
-    {
-        $request->validate([
-            'payer_name'     => 'required|string|max:255',
-            'transaction_id' => 'required|string|max:255',
-            'amount'         => 'required|numeric',
-            'payment_date'   => 'required|date',
-            'proof_image'    => 'required|image|max:2048',
-        ]);
+  public function store(Request $request, Product $product)
+{
+    $request->validate([
+        'payer_name'   => 'required|string|max:255',
+        'amount'       => 'required|numeric',
+        'payment_date' => 'required|date',
+        'proof_image'  => 'required|image|max:2048',
+    ]);
 
-        $path = $request->file('proof_image')->store('payments', 'public');
-        
-        return redirect()->route('products.show', $product->id)
-            ->with('success', 'Payment submitted, pending verification.');
-    }
+    $path = $request->file('proof_image')->store('payments', 'public');
+
+  $order = \App\Models\Order::create([
+    'club_id'          => $product->club_id,
+    'product_id'       => $product->id,
+    'payer_name'       => $request->payer_name,
+    'amount'           => $request->amount,
+    'total'            => $request->amount,   // ✅ Fix: set total = amount
+    'payment_date'     => $request->payment_date,
+    'proof_image'      => $path,
+    'verification_status' => 'pending',
+]);
+
+   return back()->with('success', 'Payment submitted, pending verification.');
+
+}
+
 }

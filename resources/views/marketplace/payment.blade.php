@@ -2,7 +2,39 @@
 @extends('layouts.app')
 
 @section('content')
+
+@if(session('success'))
+    <div id="popup-message">
+        {{ session('success') }}
+    </div>
+
+    <script>
+        setTimeout(() => {
+            const popup = document.getElementById('popup-message');
+            if (popup) {
+                popup.style.transition = 'opacity 0.5s ease';
+                popup.style.opacity = '0';
+                setTimeout(() => popup.remove(), 500);
+            }
+        }, 3000);
+    </script>
+@endif
+
 <style>
+
+    #popup-message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 9999;
+}
+
     body {
         background-color: #f8f4ff;
         font-family: 'Poppins', sans-serif;
