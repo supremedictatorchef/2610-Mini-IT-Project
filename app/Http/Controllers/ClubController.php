@@ -117,6 +117,17 @@ class ClubController extends Controller
 
         $club = Club::findOrFail($id);
         $club->delete();
+
+        $user = \App\Models\Club::find($club['owner_id']);
+
+        if ($user = auth()->user()) {
+            $user->notify(new ClubNotification(
+            $club,
+            "Your club {$club->name} has been submitted deleted. "
+            ));
+        }
+
+
         return redirect()->route('clubs.index')
                          ->with('success', 'Club deleted successfully!');
     }
@@ -187,6 +198,19 @@ class ClubController extends Controller
         $validated['owner_id'] = Auth::id();
 
         Club::create($validated);
+
+        $user = \App\Models\Club::find($clubs['owner_id']);
+
+        if ($user = auth()->user()) {
+            $user->notify(new ClubNotification(
+            $clubs,
+            "Your club {$clubs->name} has been submitted for review. 
+            The admins will review your club and determine if it's official. "
+            ));
+        }
+
+        
+
 
         return redirect()->route('clubs.index')
                          ->with('success', 'Club created successfully!');
@@ -369,6 +393,17 @@ public function chatroom(Club $club)
     {
         $club->is_Verified = true;
         $club->save();
+
+        $user = \App\Models\Club::find($club['owner_id']);
+
+        if ($user = auth()->user()) {
+            $user->notify(new ClubNotification(
+            $club,
+            "Your club {$club->name} has been verified by admins and your page is available. 
+            Congratulations! "
+            ));
+        }
+
         return redirect()->route('clubs.show', $club->id)
                          ->with('success', 'Club updated successfully and members notified!');
     }
