@@ -30,13 +30,18 @@
                    <p>{{ $club->name }}</p>
                    <img src="{{ asset($club->profile_picture) }}" alt="{{ $club->name }}">
                    @if($club->is_Verified == false)
-                   
+                   <form action="{{ route('clubs.updateVerify', $club->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Verify this club?')" >
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit" class="btn-red">Verify Club</button>
+                    </form>
+
                    <form action="{{ route('clubs.destroy', $club->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this club?')" >
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn-red">Delete Club</button>
                     </form>
-                    <a
+                    
                    @endif
                </a>
            @endforeach

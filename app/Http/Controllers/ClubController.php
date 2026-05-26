@@ -174,7 +174,8 @@ class ClubController extends Controller
             'email' => 'nullable|string',
             'banner' => 'nullable|image',
             'registration_link' => 'nullable|url',
-            'registration_open' => 'sometimes'
+            'registration_open' => 'sometimes',
+            'theme' => 'required|string'
         ]);
 
         if ($request->hasFile('profile_picture')) {
@@ -360,6 +361,16 @@ public function chatroom(Club $club)
                          ->with('success', 'Club updated successfully and members notified!');
     }
 
+    // --------------------------
+    // Add committee member
+    // --------------------------
 
+    public function updateVerify(Request $request, Club $club)
+    {
+        $club->is_Verified = true;
+        $club->save();
+        return redirect()->route('clubs.show', $club->id)
+                         ->with('success', 'Club updated successfully and members notified!');
+    }
 
 }
