@@ -645,15 +645,16 @@ footer {
 }
 
 
+/* Upcoming events: light green */
 .event-upcoming {
-    background-color: #ffe066;  /* yellow */
-    color: #333;
+    background-color: #a7f3d0; 
+    color: black;
 }
 
-/* Past events (dates before today) */
+/* Past events: red */
 .event-passed {
-    background-color: green;  /* green */
-    color: #fff;
+    background-color: #f87171; 
+    color: black;
 }
 
 .btn-edit {

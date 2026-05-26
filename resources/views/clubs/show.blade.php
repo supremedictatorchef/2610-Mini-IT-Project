@@ -121,58 +121,95 @@
                 <div class="club-main">
                     <section class="club-section" >
                         <div class="events-section" id="events-section" >
-                            <h2 class="posts-title">Events</h2>
-                            
-                            @if($club->events->count())
-                                <div class="events-table-wrapper">
-                                    <table class="events-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Event Title</th>
-                                                <th>Date</th>
-                                                <th>Time</th>
-                                                <th>Photos</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($club->events as $event)
-                                                <tr>
-                                                  <td>{{ $event->title }}</td>
-                                                  <td>{{ $event->time }}</td>
-                                                  <td>{{ $event->time }}</td>
+                     <h2 class="posts-title">Events</h2>
 
-                                                <td>
-                                                        <form action="{{ route('events.uploadFiles', $event->id) }}" method="POST" enctype="multipart/form-data">
-                                                            @csrf
-                                                            <input type="file" name="event_files[]" multiple class="inline-input" />
-                                                            <button type="submit" class="btn-blue" style="margin-left:5px;">Upload</button>
-                                                        </form>
+{{-- Upcoming Events --}}
+@if($upcomingEvents->count())
+    <div class="events-table-wrapper">
+        <table class="events-table">
+            <thead>
+                <tr>
+                    <th>Event Title</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Photos</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($upcomingEvents as $event)
+                    <tr>
+                        <td>{{ $event->title }}</td>
+                        <td>{{ $event->date }}</td>
+                        <td>{{ $event->time }}</td>
+                        <td>
+                            <form action="{{ route('events.uploadFiles', $event->id) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <input type="file" name="event_files[]" multiple class="inline-input" />
+                                <button type="submit" class="btn-blue" style="margin-left:5px;">Upload</button>
+                            </form>
 
-                                                        @if($event->uploads)
-                                                            <a href="{{ route('events.viewUploads', $event->id) }}" 
-                                                            class="btn-green" style="margin-left:5px;" target="_blank">
-                                                            View Photos
-                                                            </a>
-                                                        @endif
-                                                    </td>
-
-                                                    <td class="action-cell">
-                                                        <a href="{{ route('events.edit', ['club' => $club->id, 'event' => $event->id]) }}" class="btn-green">Edit</a>
-                                                        <form action="{{ route('events.destroy', ['club' => $club->id, 'event' => $event->id]) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this event?')">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn-red">Delete</button>
-                                                        </form>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
+                            @if($event->uploads)
+                                <a href="{{ route('events.viewUploads', $event->id) }}" class="btn-green" style="margin-left:5px;" target="_blank">
+                                    View Photos
+                                </a>
                             @else
-                                <p class="text-center">No events yet for this club.</p>
+                                <span class="text-muted" style="margin-left:5px;">No photos yet</span>
                             @endif
+                        </td>
+                        <td>
+                            <a href="{{ route('events.edit', [$club->id, $event->id]) }}" class="btn-green">Edit</a>
+                            <form action="{{ route('events.destroy', [$club->id, $event->id]) }}" method="POST" style="display:inline;">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn-red">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+@else
+    <p class="text-center">No upcoming events for this club.</p>
+@endif
+
+{{-- Past Events --}}
+@if($pastEvents->count())
+    <button class="btn btn-secondary" onclick="togglePastEvents()">View Past Events</button>
+
+    <div id="past-events" style="display:none;">
+        <table class="events-table">
+            <thead>
+                <tr>
+                    <th>Event Title</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Photos</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($pastEvents as $event)
+                    <tr>
+                        <td>{{ $event->title }}</td>
+                        <td>{{ $event->date }}</td>
+                        <td>{{ $event->time }}</td>
+                        <td>
+                            @if($event->uploads)
+                                <a href="{{ route('events.viewUploads', $event->id) }}" class="btn-green" target="_blank">View Photos</a>
+                            @else
+                                <span class="text-muted">No photos yet</span>
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+@else
+    <p class="text-center">No past events for this club.</p>
+@endif
+
+
                         </div>
                     </section>
                 </div>
@@ -377,6 +414,12 @@ links.forEach(link => {
     }
   });
 });
+
+function togglePastEvents() {
+    const section = document.getElementById('past-events');
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
 
 </script>
 @endpush

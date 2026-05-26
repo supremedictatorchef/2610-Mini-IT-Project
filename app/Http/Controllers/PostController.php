@@ -8,6 +8,10 @@ use App\Enums\ClubRole;
 use App\Notifications\ClubNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;   
+use Carbon\Carbon;
+use App\Models\PostComment;
+use App\Events\CommentPosted;
 
 class PostController extends Controller
 {
@@ -106,10 +110,49 @@ class PostController extends Controller
                          ->with('success', 'Post deleted successfully!');
     }
 
-    public function like(Post $post)
+public function like(Post $post)
 {
-    $post->increment('likes_count');
-    return back();
+    $userId = auth()->id();
+
+    // Check if this user already liked
+    $existing = $post->likes()->where('user_id', $userId)->first();
+
+    if ($existing) {
+        // Unlike
+        $existing->delete();
+    } else {
+        // Like
+        $post->likes()->create(['user_id' => $userId]);
+    }
+
+    return response()->json(['likes_count' => $post->likes()->count()]);
 }
+
+
+public function comment(Request $request, Post $post)
+{
+    $request->validate(['body' => 'required|string']);
+
+    $comment = $post->comments()->create([
+        'user_id' => auth()->id(),
+        'body' => $request->body,
+    ]);
+
+    broadcast(new CommentPosted($comment))->toOthers();
+
+    return response()->json($comment->load('user'));
+}
+
+
+
+public function getComments(Post $post)
+{
+    return response()->json(
+        $post->comments()->with('user')->latest()->get()
+    );
+}
+
+
+
 
 }
