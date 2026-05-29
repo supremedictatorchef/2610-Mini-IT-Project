@@ -373,9 +373,9 @@ class ClubController extends Controller
             ->where('club_id', $club->id)
             ->update($updateData);
 
-        return redirect()->route('clubs.committee', $club->id)
-                         ->with('success', 'Profile updated successfully!');
-    }
+    return redirect()->route('clubs.committee', $club->id)
+                     ->with('success', 'Profile updated successfully!');
+}
 
     // --------------------------
     // Remove committee member
@@ -410,61 +410,4 @@ class ClubController extends Controller
                          ->with('success', 'Club updated successfully and members notified!');
     }
 
-    // --------------------------
-    // Add committee member
-    // --------------------------
-
-    public function updateVerify(Request $request, Club $club)
-    {
-        $club->is_Verified = true;
-        $club->save();
-
-        $user = \App\Models\User::find($club->owner_id);
-
-        $user->notify(new ClubNotification(
-            $club,
-            "Your club {$club->name} has been verified by admins and your page is available. 
-            Congratulations!  "
-            ));
-    
-        
-
-        return redirect()->route('clubs.show', $club->id)
-                         ->with('success', 'Club updated successfully and members notified!');
-    }
-
-    //Public Display Method
-    public function faqView($id)
-    {
-        $club = Club::findOrFail($id);
-
-        // Check if the current user is a committee member of THIS club
-        $isCommittee = false;
-        if (Auth::check()) {
-            $membership = $club->users()->where('user_id', Auth::id())->first();
-            $isCommittee = $membership && $membership->pivot->role === ClubRole::COMMITTEE->value;
-        }
-        
-        // Pass $isCommittee safely down into the view template
-        return view('clubs.faq', compact('club', 'isCommittee'));
-    }
-
-    public function updateFaq(Request $request, $id)
-    {
-        $club = Club::findOrFail($id);
-
-        $this->authorizeCommittee($club);
-
-        $request->validate([
-            'faq' => 'nullable|array',
-            'faq.*.question' => 'required|string',
-            'faq.*.answer' => 'required|string',
-        ]);
-
-        $club->faq = $request->input('faq', []); 
-        $club->save();
-
-        // Redirect them straight back to the view-only page with the success confirmation!
-        return redirect()->route('clubs.faq.view', $club->id)->with('success', 'FAQs updated successfully!');
-    }
 }
