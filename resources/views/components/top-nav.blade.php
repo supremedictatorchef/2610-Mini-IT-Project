@@ -4,11 +4,11 @@
 <div class="top-nav">
     <img src="{{ asset('images/drop down.png') }}" id="drop-down">
     <ul class="drop-down-list">
-        <li><a href="{{ url('/') }}">Home</a></li>
-        <li><a href="{{ url('/clubs') }}">Clubs</a></li>
+        <a href="{{ url('/') }}"><li>Home</li></a>
+        <a href="{{ url('/clubs') }}"><li>Clubs</li></a>
         @if (Route::has('login'))
             @auth
-                <li><a href="{{ url('/calendar') }}">Calendar</a></li>
+                <a href="{{ url('/calendar') }}"><li>Calendar</li></a>
             @endauth
         @endif
     </ul>
