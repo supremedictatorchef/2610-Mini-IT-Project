@@ -1,3 +1,5 @@
+<x-top-nav></x-top-nav>
+
 @php
     $isCommittee = Auth::user() && Auth::user()->clubs()->where('club_id', $club->id)->first()?->pivot->role === \App\Enums\ClubRole::COMMITTEE->value;
     $themes = config('themes');
