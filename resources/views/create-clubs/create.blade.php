@@ -46,7 +46,7 @@
 
         <div class="form-group-clubs">
             <label for="profile_picture">Profile Picture</label><br>
-            <input type="file" name="profile_picture" id="profile_picture">
+            <input type="file" name="profile_picture" id="profile_picture" accept="image/*">
         </div>
 
         <div class="form-group-clubs">
