@@ -32,7 +32,8 @@ class Club extends Model
 
     protected $casts = [
         'registration_open' => 'boolean',
-        'category' => ClubCategory::class
+        'category' => ClubCategory::class,
+        'faq' => 'array',
     ];
 
     // app/Models/Club.php
@@ -109,6 +110,8 @@ class Club extends Model
     return $this->hasMany(Message::class);
 }
 
-
+    public function faqs()
+    {
+        return $this->hasMany(Faq::class); 
+    }
 }
-

@@ -33,13 +33,14 @@ Route::get('/clubs/search', [ClubController::class, 'search'])->name('clubs.sear
 Route::get('/clubs', [ClubController::class, 'list'])->name('clubs.index');
 Route::get('/clubs/{club}', [ClubController::class, 'show'])->name('clubs.show');
 
+Route::get('/clubs/{id}/faq', [ClubController::class, 'faqView'])->name('clubs.faq.view');
 
 /*
 |--------------------------------------------------------------------------
 | Authenticated Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard - shows profile + followed clubs/events
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
     Route::patch('/dashboard', [UserController::class, 'updateProfile'])->name('dashboard.update');
