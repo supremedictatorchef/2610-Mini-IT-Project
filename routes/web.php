@@ -107,9 +107,9 @@ Route::post('/clubs/{club}/posts', [PostController::class, 'store'])->name('post
 Route::resource('posts', PostController::class)->except(['create', 'store']);
 
 // Likes + Comments
-Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
-Route::get('/posts/{post}/comments', [PostController::class, 'getComments']);
-Route::post('/posts/{post}/comment', [PostController::class, 'comment'])->name('posts.comment');
+    Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
+    Route::get('/posts/{post}/comments', [PostController::class, 'getComments']);
+    Route::post('/posts/{post}/comment', [PostController::class, 'comment'])->name('posts.comment');
 
     // Route for create clubs
     Route::get('/create-clubs', [ClubController::class, 'create'])->name('create-clubs.create');
@@ -136,29 +136,19 @@ Route::post('/posts/{post}/comment', [PostController::class, 'comment'])->name('
     Route::delete('/messages/{message}', [App\Http\Controllers\MessageController::class, 'destroy']) ->name('messages.destroy');
 
  //Marketplace
-// Marketplace storefront + admin
-Route::get('/clubs/{club}/marketplace', [ProductController::class, 'index'])->name('clubs.marketplace');
-Route::get('/clubs/{club}/marketplace/admin', [ProductController::class, 'adminDashboard'])->name('marketplace.admin');
-
-// Product management
-Route::get('/clubs/{club}/products/create', [ProductController::class, 'create'])->name('products.create');
-Route::post('/clubs/{club}/products', [ProductController::class, 'store'])->name('products.store');
-Route::resource('products', ProductController::class)->except(['index','create','store']);
-Route::post('/products/{product}/soldout', [ProductController::class, 'markSoldOut'])->name('products.soldout');
-
-// Treasurer update
-Route::post('/clubs/{club}/treasurer/update', [ProductController::class, 'updateTreasurer'])->name('treasurer.update');
-
-// Cart
-Route::resource('cart', CartController::class);
-Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
-
-// Payment (always product-based)
-Route::get('/products/{product}/payment', [PaymentController::class, 'create'])->name('payment.create');
-Route::post('/products/{product}/payment', [PaymentController::class, 'store'])->name('payment.store');
-Route::get('/products/{product}/sales', [ProductController::class, 'sales'])->name('products.sales');
-Route::post('/orders/{order}/verify', [OrderController::class, 'verify'])->name('orders.verify');
-
+    Route::get('/clubs/{club}/marketplace', [ProductController::class, 'index'])->name('clubs.marketplace');
+    Route::get('/clubs/{club}/marketplace/admin', [ProductController::class, 'adminDashboard'])->name('marketplace.admin');
+    Route::get('/clubs/{club}/products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('/clubs/{club}/products', [ProductController::class, 'store'])->name('products.store');
+    Route::resource('products', ProductController::class)->except(['index','create','store']);
+    Route::post('/products/{product}/soldout', [ProductController::class, 'markSoldOut'])->name('products.soldout');
+    Route::post('/clubs/{club}/treasurer/update', [ProductController::class, 'updateTreasurer'])->name('treasurer.update');
+    Route::resource('cart', CartController::class);
+    Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+    Route::get('/products/{product}/payment', [PaymentController::class, 'create'])->name('payment.create');
+    Route::post('/products/{product}/payment', [PaymentController::class, 'store'])->name('payment.store');
+    Route::get('/products/{product}/sales', [ProductController::class, 'sales'])->name('products.sales');
+    Route::post('/orders/{order}/verify', [OrderController::class, 'verify'])->name('orders.verify');
 
 
 });
