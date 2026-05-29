@@ -204,11 +204,10 @@
                 @endforeach
             </tbody>
         </table>
-    </div>
-@else
-    <p class="text-center">No past events for this club.</p>
-@endif
-
+                </div>
+            @else
+                <p class="text-center">No past events for this club.</p>
+            @endif
 
                         </div>
                     </section>
@@ -299,7 +298,6 @@
             });
             </script>
 
-
             <!-- CLUB CHATROOM CARD -->
             <div class="info-card chatroom-card">
                 <h4>Club Chatroom</h4>
@@ -311,12 +309,8 @@
             <div class="info-card marketplace-card">
                 <h4>Club Marketplace</h4>
                 <p>Browse and purchase items offered by this club.</p>
-                <a href="{{ route('clubs.marketplace', $club->id) }}" class="btn btn-warning">
-    Visit Marketplace
-</a>
-
-            </div>
-
+                <a href="{{ route('clubs.marketplace', $club->id) }}" class="btn btn-warning"> Visit Marketplace </a>
+              </div>
 
 <!-- Theme preview -->
  @if (auth()->user()->role === \App\Enums\ClubRole::PRESIDENT || auth()->user()->role === \App\Enums\ClubRole::COMMITTEE || auth()->user()->is_admin )
@@ -344,8 +338,6 @@
                                 {{ $theme['content-box'] }});">
                                 </button>
                         @endforeach
-                
-
 
                     <button type="submit" class="btn-submit" style="position: absolute; bottom:1em; right:0em; transform:scale(0.9);">Update Theme</button>
                 </form>
@@ -353,15 +345,10 @@
             
             </div>
             
-
         <button id="preview-btn" onclick="openTheme()">
             <p id="theme-lbl">Theme</p>
-            
-                
-
         </button>
-    </div>
-    
+    </div>   
 @endif
 
  <!-- script for JSON photo collection  for events -->
@@ -415,7 +402,7 @@ const links = document.querySelectorAll('.jump-anchor');
 // 2. Loop through each link in the list
 links.forEach(link => {
   link.addEventListener('click', function(e) {
-    e.preventDefault(); // Stops URL from changing
+    e.preventDefault(); 
     
     const targetId = this.getAttribute('href'); 
     const targetElement = document.querySelector(targetId);
@@ -434,4 +421,3 @@ function togglePastEvents() {
 
 </script>
 @endpush
-

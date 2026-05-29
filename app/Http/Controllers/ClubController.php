@@ -324,8 +324,6 @@ class ClubController extends Controller
                      ->with('success', 'Profile updated successfully!');
 }
 
-
-
     // --------------------------
     // Remove committee member
     // --------------------------
@@ -359,7 +357,5 @@ public function chatroom(Club $club)
         return redirect()->route('clubs.show', $club->id)
                          ->with('success', 'Club updated successfully and members notified!');
     }
-
-
 
 }
