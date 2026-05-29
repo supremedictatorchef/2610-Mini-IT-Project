@@ -99,6 +99,8 @@
 <div class="payment-container">
     <h2>Submit Payment for {{ $product->title }}</h2>
 
+
+
     <!-- Treasurer Details Above Form -->
     <div class="treasurer-box">
     <h4>💰 Treasurer Details</h4>
