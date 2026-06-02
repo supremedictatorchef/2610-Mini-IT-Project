@@ -16,7 +16,7 @@
     <!-- Sub-header -->
     <div class="club-banner">
         @if($club->banner_image)
-            <img src="{{ asset('storage/' . $club->banner_image) }}" alt="{{ $club->name }} Banner" class="banner-img">
+            <img src="{{ asset($club->banner_image) }}" alt="{{ $club->name }} Banner" class="banner-img">
         @else
             <div class="club-banner-placeholder">
                 <h2>{{ $club->name }}</h2>
@@ -53,10 +53,10 @@
 
     <!-- Club card -->
     <div class="club-card-header">
-        <img src="{{ asset('images/' . $club->profile_picture) }}" class="club-image-rect" alt="{{ $club->name }}">
+        <img src="{{  asset($club->profile_picture) }}" class="club-image-rect" alt="{{ $club->name }}">
         <p class="club-description">{{ $club->description }}</p>
 
-        @if($isCommittee)
+        @if(auth()->user()->id == $club->owner_id || $isCommittee)
             <div class="club-actions-toolbar">
                 <a href="{{ route('posts.create', $club->id) }}" class="btn-blue">Create Post</a>
                 <a href="{{ route('events.create', ['club' => $club->id]) }}" class="btn-green">Add Event</a>

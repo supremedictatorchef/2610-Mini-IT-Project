@@ -28,7 +28,7 @@
            @foreach ($clubs->where('category', $category->value) as $club)
                <a href="{{ route('clubs.show', $club->id) }}">
                    <p>{{ $club->name }}</p>
-                   <img src="{{ asset($club->profile_picture) }}" alt="{{ $club->name }}">
+                   <img src="{{ asset($club->banner_image) }}" alt="{{ $club->name }}">
                    @if($club->is_Verified == false)
                    <form action="{{ route('clubs.updateVerify', $club->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Verify this club?')" >
                                             @csrf
@@ -50,7 +50,7 @@
                @if($club->is_Verified)
                <a href="{{ route('clubs.show', $club->id) }}">
                    <p>{{ $club->name }}</p>
-                   <img src="{{ asset($club->profile_picture) }}" alt="{{ $club->name }}">
+                   <img src="{{ asset($club->banner_image) }}" alt="{{ $club->name }}">
                </a>
                @endif
                @endforeach

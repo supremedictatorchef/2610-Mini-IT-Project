@@ -65,7 +65,7 @@ class ClubController extends Controller
     // --------------------------
     public function edit(Club $club)
     {
-        $this->authorizeCommittee($club);
+       
         return view('create-clubs.edit', compact('club'));
     }
 
@@ -204,6 +204,12 @@ class ClubController extends Controller
             $validated['profile_picture'] = $request->file('profile_picture')->store('clubs', 'public');
         } else {
             $validated['profile_picture'] = "images/mmu.png";
+        }
+
+        if ($request->hasFile('banner_image')) {
+            $validated['banner_imagae'] = $request->file('banner_image')->store('clubs', 'public');
+        } else {
+            $validated['banner_image'] = "images/mmu.png";
         }
 
         $validated['owner_id'] = Auth::id();
