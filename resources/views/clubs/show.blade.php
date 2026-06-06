@@ -1,5 +1,16 @@
 @php
-    $isCommittee = Auth::user() && Auth::user()->clubs()->where('club_id', $club->id)->first()?->pivot->role === \App\Enums\ClubRole::COMMITTEE->value;
+    $membership = Auth::user() 
+        ? Auth::user()->clubs()->where('club_id', $club->id)->wherePivot('status', 'active')->first()
+        : null;
+
+    $managementRoles = [
+        \App\Enums\ClubRole::PRESIDENT->value,
+        \App\Enums\ClubRole::HICOM->value,
+        \App\Enums\ClubRole::SUBCOM->value
+    ];
+
+    $isCommittee = $membership && in_array(strtolower($membership->pivot->role), $managementRoles);
+
     $themes = config('themes');
     $selectedTheme = $themes[$club->theme] ?? $themes['default'];
 @endphp
@@ -8,6 +19,18 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/club-content.css') }}">
+    
+    @if(isset($selectedTheme))
+    <style>
+        :root {
+            --bg: {{ $selectedTheme['bg'] ?? '#ffffff' }};
+            --text: {{ $selectedTheme['text'] ?? '#000000' }};
+            --content-box: {{ $selectedTheme['content-box'] ?? '#ffffff' }};
+            --shadow-color: {{ $selectedTheme['shadow-color'] ?? 'rgba(0,0,0,0.1)' }};
+            --post-colour: {{ $selectedTheme['post-colour'] ?? '#ffffff' }};
+        }
+    </style>
+    @endif
 @endpush
 
 @section('content')
@@ -311,7 +334,7 @@
               </div>
 
 <!-- Theme preview -->
- @if (auth()->user()->role === \App\Enums\ClubRole::PRESIDENT || auth()->user()->role === \App\Enums\ClubRole::COMMITTEE || auth()->user()->is_admin )
+@if (auth()->user()->role === \App\Enums\ClubRole::PRESIDENT->value || auth()->user()->role === \App\Enums\ClubRole::HICOM->value || auth()->user()->is_admin)
                 
     <div id="preview-div">
         <div id="theme-menu" style="position: relative;">
@@ -321,7 +344,7 @@
                     @csrf
                     @method('PUT')
                     
-                    <input type="hidden" name="theme" id="theme" value="{{ $club->theme }}" id="form-themes">
+                    <input type="hidden" name="theme" id="form-themes" value="{{ $club->theme }}">
                         @foreach($themes as $themeName => $theme)
                                 <button type="button" onclick="changeTheme()" name="btn-preview-theme" class="btn-preview-theme" 
                                 data-value="{{ $themeName }}" 
