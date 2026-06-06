@@ -115,7 +115,8 @@ Route::resource('posts', PostController::class)->except(['create', 'store']);
     // Route for create clubs
     Route::get('/create-clubs', [ClubController::class, 'create'])->name('create-clubs.create');
     Route::post('/create-clubs', [ClubController::class, 'store'])->name('create-clubs.store');
-    
+    Route::put('/clubs/{club}/verify', [ClubController::class, 'updateVerify'])->name('clubs.updateVerify');
+
     // Route for updating themes
     Route::put('/clubs/{club}', [ClubController::class, 'updateTheme'])
     ->name('clubs.updateTheme');
