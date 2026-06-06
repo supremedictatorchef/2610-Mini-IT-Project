@@ -8,12 +8,13 @@
   border-radius: 10px;
   width: 90%;
   max-width: 900px;
-  margin: 30px auto;
+  margin: 100px auto 30px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   display: flex;
   flex-direction: column;
   height: 80vh;
 }
+
 .chatroom-header {
   background-color: #075e54;
   color: #fff;
@@ -22,6 +23,7 @@
   border-top-right-radius: 10px;
   font-weight: 600;
 }
+
 .chat-window {
   flex: 1;
   padding: 20px;
@@ -31,12 +33,14 @@
   display: flex;
   flex-direction: column;
 }
+
 .message-wrapper {
   display: flex;
   align-items: flex-end;
   margin-bottom: 20px;
   position: relative;
 }
+
 .message-wrapper.sent { flex-direction: row-reverse; }
 .profile-pic {
   width: 35px;
@@ -45,6 +49,7 @@
   margin: 0 8px;
   object-fit: cover;
 }
+
 .message {
   max-width: 70%;
   padding: 10px 15px;
@@ -54,6 +59,7 @@
   position: relative;
   box-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
+
 .message.sent { background-color: #dcf8c6; align-self: flex-end; }
 .message.received { background-color: #fff; align-self: flex-start; }
 .timestamp {
@@ -63,6 +69,7 @@
   bottom: -15px;
   right: 10px;
 }
+
 .chat-input-area {
   display: flex;
   background-color: #f0f0f0;
@@ -70,6 +77,7 @@
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
 }
+
 #chat-input {
   flex: 1;
   border: none;
@@ -77,6 +85,7 @@
   padding: 10px 15px;
   outline: none;
 }
+
 .send-btn {
   background-color: #075e54;
   color: #fff;
@@ -99,6 +108,7 @@
   padding: 6px 0;
   min-width: 120px;
 }
+
 .message-menu button {
   display: block;
   width: 100%;
@@ -109,6 +119,7 @@
   font-size: 0.9rem;
   cursor: pointer;
 }
+
 .message-menu button:hover { background-color: #f5f5f5; }
 </style>
 
