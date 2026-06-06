@@ -40,7 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Dashboard & Profile
     Route::get('/dashboard', [UserController::class, 'dashboard'])->name('dashboard');
-    $this->patch('/dashboard', [UserController::class, 'updateProfile'])->name('dashboard.update');
+    Route::patch('/dashboard', [UserController::class, 'updateProfile'])->name('dashboard.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
     Route::post('/clubs/{club}/contact', [ClubController::class, 'updateContact'])->name('clubs.updateContact');
