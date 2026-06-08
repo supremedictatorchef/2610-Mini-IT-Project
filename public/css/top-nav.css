@@ -136,7 +136,7 @@ a {
     pointer-events: auto; /* Restores clickable actions for input and submit items */
     display: flex;
     align-items: center;
-    height: 100vh;
+    height: 10vh;
     position: relative; 
     margin-bottom: 0;
 }
