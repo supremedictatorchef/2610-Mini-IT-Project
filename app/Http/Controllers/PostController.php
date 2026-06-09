@@ -14,10 +14,33 @@ use App\Events\CommentPosted;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Club $club)
     {
+        
+        $user = Auth::user();
+
+        $clubIds = $user->followed_clubs ?? [];
         $posts = Post::with('club')->latest()->get();
-        return view('welcome', compact('posts'));
+
+
+        $followedPosts = Post::with('club')
+            ->whereIn('club_id', $clubIds)
+            ->latest()
+            ->get();
+
+        $otherPosts = Post::with('club')
+            ->whereNotIn('club_id', $clubIds)
+            ->latest()
+            ->get();
+
+            return view('welcome', [
+            'clubIds' => $clubIds,
+            'followedPosts' => $followedPosts,
+            'otherPosts' => $otherPosts
+        ],
+        compact('posts')
+        );
+
     }
 
     public function create(Club $club)
