@@ -130,4 +130,23 @@ class CommitteeController extends Controller
         return redirect()->route('committee.index', ['club' => $club->id])
                          ->with('success', 'Member removed successfully!');
     }
+public function updateBackground(Request $request, Club $club)
+{
+    $request->validate([
+        'background' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    $path = $request->file('background')->store('committee_backgrounds', 'public');
+
+    // Save into clubs table
+    $club->committee_background = $path;
+    $club->save();
+
+    return back()->with('success', 'Background updated successfully!');
+}
+
+
+
+
+
 }
