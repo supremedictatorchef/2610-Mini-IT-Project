@@ -654,7 +654,6 @@ footer {
     outline: none;
 }
 
-/* Button */
 .btn-event {
     display: inline-block;
     width: 100%;
@@ -773,4 +772,5 @@ footer {
     background-attachment: fixed;
 
 }
+
 
