@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('banner_image')->nullable();
             $table->string('theme')->default('Default');
             $table->string('committee_background')->nullable(); 
+            $table->string('committee_theme')->default('white'); 
             
             // Contact & registration
             $table->string('email')->nullable();
