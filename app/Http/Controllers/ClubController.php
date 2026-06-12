@@ -174,7 +174,7 @@ class ClubController extends Controller
     // --------------------------
     // Create new club (Fixed payload signatures)
     // --------------------------
-    public function store(Request $request)
+    public function store(Request $request, Club $clubs)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -195,14 +195,14 @@ class ClubController extends Controller
         }
 
         if ($request->hasFile('banner_image')) {
-            $validated['banner_imagae'] = $request->file('banner_image')->store('clubs', 'public');
+            $validated['banner_image'] = $request->file('banner_image')->store('clubs', 'public');
         } else {
             $validated['banner_image'] = "images/mmu.png";
         }
 
         $validated['owner_id'] = Auth::id();
 
-        $club = Club::create($validated);
+        Club::create($validated);
 
         if ($user = auth()->user()) {
             $user->notify(new ClubNotification(
@@ -239,9 +239,9 @@ class ClubController extends Controller
     // --------------------------
     // Create club form
     // --------------------------
-    public function create()
+    public function create(Club $club)
     {
-        return view('create-clubs.create');
+        return view('create-clubs.create', compact('club'));
     }
 
     // --------------------------
@@ -374,24 +374,6 @@ class ClubController extends Controller
         return view('clubs.chatroom', compact('club', 'messages'));
     }
 
-    // Update themes
-    public function updateTheme(Request $request, Club $club)
-    {
-        $data = $request->validate([
-            'theme' => 'required|string'
-        ]);
-
-        $club->update($data);
-
-        $themes = config('themes');
-        $selectedTheme = $themes[$club->theme] ?? $themes['default'];
-
-        return redirect()->route('clubs.show', $club->id)
-                     ->with([
-                         'success' => 'Club theme updated successfully!',
-                         'selectedTheme' => $selectedTheme 
-                     ]);
-    }
     
     // --------------------------
     // Add committee member

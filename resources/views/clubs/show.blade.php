@@ -37,7 +37,7 @@
     <!-- Sub-header -->
     <div class="club-banner">
         @if($club->banner_image)
-            <img src="{{ asset('storage/' . $club->banner_image) }}" alt="{{ $club->name }} Banner" class="banner-img">
+            <img src="{{ asset($club->banner_image) }}" alt="{{ $club->name }} Banner" class="banner-img">
         @else
             <div class="club-banner-placeholder">
                 <h2>{{ $club->name }}</h2>
@@ -74,7 +74,7 @@
 
     <!-- Club card -->
     <div class="club-card-header">
-        <img src="{{ asset('images/' . $club->profile_picture) }}" class="club-image-rect" alt="{{ $club->name }}">
+        <img src="{{ asset($club->profile_picture) }}" class="club-image-rect" alt="{{ $club->name }}">
         <p class="club-description">{{ $club->description }}</p>
 
         @php
@@ -341,14 +341,13 @@
                 <div id="preview-div">
                     <div id="theme-menu" style="position: relative;">
                         <div>
-                            <form action="{{ route('clubs.updateTheme', $club->id) }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('clubs.update', $club->id) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
 
                                 <input type="hidden" name="theme" id="form-themes" value="{{ $club->theme }}">
                                 @foreach($themes as $themeName => $theme)
                                     <button type="button"
-                                            onclick="changeTheme()"
                                             name="btn-preview-theme"
                                             class="btn-preview-theme"
                                             data-value="{{ $themeName }}"
@@ -370,7 +369,7 @@
                         <p id="theme-lbl">Theme</p>
                     </button>
                 </div>
-        
+                @endif
         </div>
     </div>
 @endsection
@@ -406,7 +405,8 @@ function openTheme(){
 
 document.querySelectorAll('.btn-preview-theme').forEach(btn => {
     btn.addEventListener('click', () => {
-        document.getElementById('theme').value = btn.dataset.value;
+        console.log('Button has the active style applied.');
+        document.getElementById('form-themes').value = btn.dataset.value;
         document.documentElement.style.setProperty('--bg', btn.dataset.bg);
         document.documentElement.style.setProperty('--text', btn.dataset.text);
         document.documentElement.style.setProperty('--content-box', btn.dataset.context);
@@ -414,6 +414,9 @@ document.querySelectorAll('.btn-preview-theme').forEach(btn => {
         document.documentElement.style.setProperty('--post-colour', btn.dataset.post);
     });
 });
+
+
+
 
 // 1. Select all matching links
 const links = document.querySelectorAll('.jump-anchor');

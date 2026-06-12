@@ -14,13 +14,6 @@
     <h1>Clubs and Societies in MMU</h1>
    </header>
 
-   <!--  Dynamic Categories Loop -->
-@foreach (\App\Enums\ClubCategory::cases() as $category)
-   <h2>{{ $category->value }}</h2>
-   <div class="container">
-       
-       {{-- FIX: Check if a user is logged in AND if they are an admin --}}
-       @if (auth()->check() && auth()->user()->is_admin)
            
            {{-- Admin View: Shows all clubs, including unverified ones with admin actions --}}
    <!--  Dynamic Categories Loop -->
@@ -67,7 +60,7 @@
                @endforeach
            @endif
        </div>
-     @endforeach
+@endforeach
 
 
 </body>
