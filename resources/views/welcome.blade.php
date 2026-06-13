@@ -243,6 +243,22 @@
     transform: scale(1.3);
 }
 
+/* Hearts that rain down */
+.heart {
+    position: fixed;
+    top: -20px;
+    font-size: 24px;
+    color: #e0245e;
+    animation: fall 3s linear forwards;
+    pointer-events: none;
+}
+
+@keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+
 </style>
 @endpush
 
@@ -255,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const closeBtn = popup.querySelector(".close");
     let currentPostId = null;
 
-    // ✅ Like button 
+    // ✅ Like button logic
     document.querySelectorAll('.like-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const postId = btn.dataset.id;
@@ -271,24 +287,38 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(res => res.json())
             .then(data => {
-
-            console.log('Liked state:', data.liked);
+                console.log('Liked state:', data.liked); 
 
                 if (data.liked) {
                     btn.classList.add('liked');
                     icon.classList.remove('fa-regular');
                     icon.classList.add('fa-solid');
+
+                    // Raining hearts effect
+                    for (let i = 0; i < 10; i++) {
+                        const heart = document.createElement('i');
+                        heart.className = 'fa-solid fa-heart heart';
+                        heart.style.left = Math.random() * window.innerWidth + 'px';
+                        heart.style.fontSize = (16 + Math.random() * 20) + 'px';
+                        heart.style.color = ['#e0245e', '#ff69b4', '#ff1493'][Math.floor(Math.random()*3)];
+                        heart.style.animationDelay = (Math.random() * 1) + 's';
+                        document.body.appendChild(heart);
+
+                        setTimeout(() => heart.remove(), 3000);
+                    }
+
                 } else {
                     btn.classList.remove('liked');
                     icon.classList.remove('fa-solid');
                     icon.classList.add('fa-regular');
                 }
+
                 countEl.textContent = data.likes_count;
             })
             .catch(err => console.error('Like error:', err));
         });
     });
-
+    
     // ✅ Open popup
     document.querySelectorAll('.comment-toggle').forEach(btn => {
         btn.addEventListener('click', e => {
