@@ -105,8 +105,6 @@
         </div>
     </div>
 
-        
-
 @else
 
 <h2>Latest Posts</h2>
@@ -151,7 +149,6 @@
         </form>
     </div>
 </div>
-
 
 @endif
 
@@ -216,21 +213,36 @@
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
 .comment-bubble strong { color: #007bff; }
+
 .like-btn {
-    color: black;
-    font-size: 18px;
     border: none;
     background: none;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: black; 
 }
-.like-btn.liked i {
-    color: #e0245e; 
+
+.like-btn i {
+    color: black;
     transition: color 0.3s ease;
 }
 
-.like-btn:active { transform: scale(1.3); }
+.like-btn.liked i {
+    color: #e0245e;
+}
+
+.like-btn span {
+    color: black;
+}
+
+.like-btn:active {
+    transform: scale(1.3);
+}
+
 </style>
 @endpush
 
@@ -243,30 +255,34 @@ document.addEventListener("DOMContentLoaded", function() {
     const closeBtn = popup.querySelector(".close");
     let currentPostId = null;
 
-    // ✅ Like button logic
+    // ✅ Like button 
     document.querySelectorAll('.like-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const postId = btn.dataset.id;
+            const icon = btn.querySelector('i');
+            const countEl = document.getElementById(`like-count-${postId}`);
+
             fetch(`/posts/${postId}/like`, {
                 method: 'POST',
-                headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Accept": "application/json"
+                }
             })
             .then(res => res.json())
             .then(data => {
-                const icon = btn.querySelector('i');
-                const countEl = document.getElementById(`like-count-${postId}`);
 
-               if (data.liked) {
-                icon.classList.remove('fa-regular');
-                icon.classList.add('fa-solid');
-                btn.classList.add('liked'); 
-            } else {
-                icon.classList.remove('fa-solid');
-                icon.classList.add('fa-regular');
-                btn.classList.remove('liked');
-            }
+            console.log('Liked state:', data.liked);
 
-
+                if (data.liked) {
+                    btn.classList.add('liked');
+                    icon.classList.remove('fa-regular');
+                    icon.classList.add('fa-solid');
+                } else {
+                    btn.classList.remove('liked');
+                    icon.classList.remove('fa-solid');
+                    icon.classList.add('fa-regular');
+                }
                 countEl.textContent = data.likes_count;
             })
             .catch(err => console.error('Like error:', err));
@@ -328,16 +344,21 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(res => res.json())
         .then(data => {
             popupForm.querySelector('textarea').value = '';
-            popupComments.innerHTML += `<div class="comment-bubble"><strong>${data.user.name}</strong>: ${data.body}</div>`;
+            popupComments.innerHTML += `
+                <div class="comment-bubble">
+                    <strong>${data.user.name}</strong>: ${data.body}
+                </div>
+            `;
             popupComments.scrollTop = popupComments.scrollHeight;
 
             const countEl = document.getElementById(`comment-count-${currentPostId}`);
             countEl.textContent = parseInt(countEl.textContent) + 1;
-        });
+        })
+        .catch(err => console.error('Comment error:', err));
     });
 });
 </script>
-@endpush
+
 
 
 

@@ -121,23 +121,27 @@ class PostController extends Controller
     // =========================================================================
     // Public/Interactive Interactions
     // =========================================================================
-    public function like(Post $post)
-    {
-        $userId = auth()->id();
+   public function like(Post $post)
+{
+    $userId = auth()->id();
 
-        // Check if this user already liked
-        $existing = $post->likes()->where('user_id', $userId)->first();
+    $existing = $post->likes()->where('user_id', $userId)->first();
 
-        if ($existing) {
-            // Unlike
-            $existing->delete();
-        } else {
-            // Like
-            $post->likes()->create(['user_id' => $userId]);
-        }
-
-        return response()->json(['likes_count' => $post->likes()->count()]);
+    if ($existing) {
+        // Unlike
+        $existing->delete();
+        $liked = false;
+    } else {
+        // Like
+        $post->likes()->create(['user_id' => $userId]);
+        $liked = true;
     }
+
+    return response()->json([
+        'liked' => $liked, // ✅ add this
+        'likes_count' => $post->likes()->count(),
+    ]);
+}
 
     public function comment(Request $request, Post $post)
     {
