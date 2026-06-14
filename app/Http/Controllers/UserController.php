@@ -23,6 +23,8 @@ class UserController extends Controller
 
         $clubIds = $user->followed_clubs ?? [];
 
+        $profile_picture = $user->profile_picture;
+
         $followedClubs = Club::whereIn('id', $clubIds)
             ->with(['posts', 'events'])
             ->get();
@@ -33,6 +35,8 @@ class UserController extends Controller
             'followedClubs' => $followedClubs,
             'events'        => $events,
             'user' => $user,
+            'profile_picture' => $profile_picture,
+
         ]);
     }
 

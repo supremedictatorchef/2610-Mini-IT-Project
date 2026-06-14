@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'is_admin', 'status', 'verification'])]
+#[Fillable(['name', 'email', 'password', 'is_admin', 'status', 'verification', 'profile_picture'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -74,7 +74,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
    public function getProfilePictureAttribute($value)
 {
-    return $value ? asset('storage/' . $value) : asset('images/mmu.png');
+    return $value ? asset($value) : asset('images/default_pp.png');
 }
 
 

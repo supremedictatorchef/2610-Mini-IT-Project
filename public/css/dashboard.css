@@ -17,13 +17,21 @@
         margin: 0;
     }
 
-    #profile-edit{
+    .edit-div nav{
+        margin: 0 auto;
+    }
+
+    .edit-div nav a{
+        text-align: center;
+    }
+
+    #profile-edit {
         display: flex;
         height:100%;
-        flex-grow: 0.7;
+        flex-grow: 0.9;
         flex-direction: column;
         background-color: #F0F0F0;
-        box-shadow: 0px 3px 5px #808080;
+        border-left: 2px rgb(134, 134, 134) solid;
         margin-left: 20px;
         margin-bottom: 20px;
         text-align: center;
@@ -46,6 +54,34 @@
         margin-top: 3rem;
         text-align: left;
         padding-left: 2rem;
+    }
+
+    .button-edit button{
+        width: 150px;
+        height: 40px;
+    }
+
+    .button-edit{
+        gap: 1rem;
+        display: flex;
+        position: relative;
+    }
+
+    .delete-icon{
+        font-weight: 600;
+        display: block;
+        position: absolute;
+        top: 5rem;
+        background: red;
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        border:none
+    }
+
+    .delete-icon:hover{
+        cursor: pointer;
     }
 
 
@@ -196,14 +232,6 @@
         gap: 10px;
     }
 
-    .edit-icon,
-    .delete-icon {
-        background-color: transparent;
-        border: none;
-        font-size: 22px;
-        cursor: pointer;
-        transition: color 0.2s ease;
-    }
 
     .edit-icon { color: #1a73e8; }
     .edit-icon:hover { color: #4dabf7; }
@@ -217,8 +245,4 @@
     background-color: #f87171; 
     color: black;
 }
-
-    .delete-icon { color: #e63946; }
-    .delete-icon:hover { color: #ff6b6b; }
-
 

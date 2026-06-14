@@ -7,12 +7,11 @@
 <style>
     /*Live preview Image*/
     #pic_label{
-    margin-top: 1rem;
-    background: url("{{  asset($user->profile_picture) }}") no-repeat center;
+     background: url("{{  $user->profile_picture }}") no-repeat center;
     border: solid black 3px;
     background-size: cover;
     display: inline-block;
-    width: 10rem;
+    width: 9rem;
     height: 10rem;
     text-align: center;
     border-radius: 50%;
@@ -38,7 +37,11 @@
 
 
     <div class="profile-content">
+    
     <div class="edit-div">
+    <nav>
+        <a>Personal Information</a>
+    </nav>
         <!-- Edit Form (hidden by default) -->
         <form id="profile-edit" method="POST" action="{{ route('dashboard.update') }}" enctype="multipart/form-data">
             @csrf
@@ -48,24 +51,29 @@
             <label for="email" id="email-lbl">Email</label>
             <input type="email" name="email" value="{{ Auth::user()->email }}" placeholder="Your Email" required>
             <label for="profile_picture">Profile Picture</label><br>
-                <label id="pic_label">
+            <label id="pic_label" style="margin: 0 1rem;">
                 <input type="file" name="profile_picture" id="profile_picture" accept="image/*"
                 value="{{ old('profile_picture', $user->profile_picture) }}">
-                </label>
-            <button type="submit" class="btn">Save Changes</button>
-            <button type="button" class="btn logout-btn" id="cancel-edit">Cancel</button>
+            </label>
+            <div class="button-edit" style="margin-left: 1rem;">
+                <button type="submit" class="btn">Save Changes</button>
+                <button type="button" class="btn logout-btn" id="cancel-edit">Cancel</button>
+                <form method="POST" action="{{ route('users.destroy', Auth::user()->id) }}" 
+                  onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="delete-icon">Delete Profile</button>
+            </form>
+            </div>
+            
+            
         </form>
         </div>
     <!-- Profile Card -->
     <div class="profile-container">
         <div class="icon-bar">
             <button class="edit-icon" id="edit-profile">✏️</button>
-            <form method="POST" action="{{ route('users.destroy', Auth::user()->id) }}" 
-                  onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="delete-icon">🗑️</button>
-            </form>
+            
         </div>
 
         <!-- Public View -->
