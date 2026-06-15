@@ -31,7 +31,7 @@
     <div class="committee-form-container">
         <h3 style="text-align:center;">Assign Committee Member</h3>
 
-        <form action="{{ route('clubs.terms.assign', $club->id) }}" method="POST">
+        <form action="{{ route('committee.store', $club->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             <label for="term">Academic Term Year</label>

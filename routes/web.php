@@ -129,13 +129,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // 4. Committee and Terms Assignments
         // HICOM n above
         Route::get('/clubs/{club}/committee', [ClubController::class, 'committee'])->name('clubs.committee');
-        Route::post('/clubs/{club}/committee', [ClubController::class, 'addCommitteeMember'])->name('clubs.committee.add');
+        Route::post('/clubs/{club}/committee', [CommitteeController::class, 'store'])->name('committee.store');
         Route::delete('/clubs/{club}/committee/{id}', [ClubController::class, 'removeCommitteeMember'])->name('clubs.committee.remove');
         Route::put('/clubs/{club}/committee/{id}/update', [ClubController::class, 'updateCommitteeMember'])->name('clubs.committee.update');
         Route::post('/clubs/{club}/terms/assign', [ClubTermController::class, 'assignMember'])->name('clubs.terms.assign');
         Route::post('/clubs/{club}/committee/background', [CommitteeController::class, 'updateBackground'])->name('clubs.committee.background');
-        Route::post('/clubs/{club}/committee/background', [CommitteeController::class, 'updateBackground'])->name('clubs.committee.background');
-        Route::post('/clubs/{club}/committee/theme',  [CommitteeController::class, 'updateCommitteeTheme'])->name('clubs.committee.theme');
         Route::post('/clubs/{club}/committee/theme', [CommitteeController::class, 'updateCommitteeTheme'])->name('clubs.committee.theme');
 
     });

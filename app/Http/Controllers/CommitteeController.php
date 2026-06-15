@@ -71,8 +71,9 @@ class CommitteeController extends Controller
             'committee'
         ));
 
-        return redirect()->route('committee.index', ['club' => $club->id])
-                         ->with('success', 'Invitation sent successfully!');
+       return redirect()->route('clubs.committee', ['club' => $club->id])
+                 ->with('success', 'Invitation sent successfully!');
+
     }
 
     // --------------------------
