@@ -369,7 +369,7 @@
                         <p id="theme-lbl">Theme</p>
                     </button>
                 </div>
-                @endif
+            @endif
         </div>
     </div>
 @endsection
