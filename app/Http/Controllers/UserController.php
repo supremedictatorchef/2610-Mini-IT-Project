@@ -36,8 +36,6 @@ class UserController extends Controller
             ->latest()
             ->get();
 
-            dd($likedPosts);
-
         $events = $followedClubs->pluck('events')->flatten();
 
         return view('dashboard', [
