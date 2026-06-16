@@ -12,6 +12,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Notifications\Messages\MailMessage;
 
 #[Fillable(['name', 'email', 'password', 'is_admin', 'status', 'verification', 'profile_picture'])]
 #[Hidden(['password', 'remember_token'])]
@@ -77,5 +79,18 @@ class User extends Authenticatable implements MustVerifyEmail
     return $value ? asset($value) : asset('images/default_pp.png');
 }
 
+    public function sendEmailVerificationNotification()
+    {
+        VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
+            return (new MailMessage)
+                ->subject('Verify Your Account')
+                ->greeting('Hello!')
+                ->line('Welcome aboard! Please click the button below to verify your email address and activate your account.')
+                ->action('Verify Email Address', $url)
+                ->line('If you did not create an account, no further action is required.')
+                ->salutation('Regards, ' . config('app.name'));
+        });
 
+        $this->notify(new VerifyEmail);
+    }
 }

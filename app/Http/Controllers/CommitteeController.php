@@ -26,7 +26,7 @@ class CommitteeController extends Controller
             ->where('role', 'President')
             ->first();
 
-        // ✅ Calculate remaining attempts for logged-in user
+        // Calculate remaining attempts for logged-in user
         $user = Auth::user();
         $searchCount = DB::table('search_logs')
             ->where('user_id', $user->id)
@@ -71,8 +71,9 @@ class CommitteeController extends Controller
             'committee'
         ));
 
-        return redirect()->route('committee.index', ['club' => $club->id])
-                         ->with('success', 'Invitation sent successfully!');
+       return redirect()->route('clubs.committee', ['club' => $club->id])
+                 ->with('success', 'Invitation sent successfully!');
+
     }
 
     // --------------------------

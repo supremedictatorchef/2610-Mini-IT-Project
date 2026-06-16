@@ -14,34 +14,34 @@ use App\Events\CommentPosted;
 
 class PostController extends Controller
 {
-    public function index(Club $club)
-    {
-        
-        $user = Auth::user();
+   public function index(Club $club)
+{
+    $user = Auth::user();
 
-        $clubIds = $user->followed_clubs ?? [];
-        $posts = Post::with('club')->latest()->get();
+    $clubIds = $user->followed_clubs ?? [];
 
+    $posts = Post::with('club')->withCount('likes')->latest()->get();
 
-        $followedPosts = Post::with('club')
-            ->whereIn('club_id', $clubIds)
-            ->latest()
-            ->get();
+    $followedPosts = Post::with('club')
+        ->withCount('likes')
+        ->whereIn('club_id', $clubIds)
+        ->latest()
+        ->get();
 
-        $otherPosts = Post::with('club')
-            ->whereNotIn('club_id', $clubIds)
-            ->latest()
-            ->get();
+    $otherPosts = Post::with('club')
+        ->withCount('likes')
+        ->whereNotIn('club_id', $clubIds)
+        ->latest()
+        ->get();
 
-            return view('welcome', [
-            'clubIds' => $clubIds,
-            'followedPosts' => $followedPosts,
-            'otherPosts' => $otherPosts
-        ],
-        compact('posts')
-        );
+    return view('welcome', [
+        'clubIds' => $clubIds,
+        'followedPosts' => $followedPosts,
+        'otherPosts' => $otherPosts,
+        'posts' => $posts
+    ]);
+}
 
-    }
 
     public function create(Club $club)
     {
@@ -121,23 +121,27 @@ class PostController extends Controller
     // =========================================================================
     // Public/Interactive Interactions
     // =========================================================================
-    public function like(Post $post)
-    {
-        $userId = auth()->id();
+   public function like(Post $post)
+{
+    $userId = auth()->id();
 
-        // Check if this user already liked
-        $existing = $post->likes()->where('user_id', $userId)->first();
+    $existing = $post->likes()->where('user_id', $userId)->first();
 
-        if ($existing) {
-            // Unlike
-            $existing->delete();
-        } else {
-            // Like
-            $post->likes()->create(['user_id' => $userId]);
-        }
-
-        return response()->json(['likes_count' => $post->likes()->count()]);
+    if ($existing) {
+        // Unlike
+        $existing->delete();
+        $liked = false;
+    } else {
+        // Like
+        $post->likes()->create(['user_id' => $userId]);
+        $liked = true;
     }
+
+    return response()->json([
+        'liked' => $liked, // ✅ add this
+        'likes_count' => $post->likes()->count(),
+    ]);
+}
 
     public function comment(Request $request, Post $post)
     {

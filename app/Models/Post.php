@@ -15,7 +15,7 @@ class Post extends Model
 
    protected $fillable = [
     'club_id', 'user_id', 'title', 'content', 'image',
-    'likes_count', 'comments_count'
+     'comments_count'
 ];
 
     public function club()
@@ -28,6 +28,13 @@ class Post extends Model
     
     return $this->belongsTo(User::class);
     }
+
+    protected $appends = ['likedByUser'];
+
+public function getLikedByUserAttribute()
+{
+    return $this->likes()->where('user_id', auth()->id())->exists();
+}
 
     public function likes()
 {
