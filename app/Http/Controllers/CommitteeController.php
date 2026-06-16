@@ -26,14 +26,21 @@ class CommitteeController extends Controller
             ->where('role', 'President')
             ->first();
 
-        // Calculate remaining attempts for logged-in user
+        // Check if there is an authenticated user logged in
         $user = Auth::user();
-        $searchCount = DB::table('search_logs')
-            ->where('user_id', $user->id)
-            ->whereDate('created_at', Carbon::today())
-            ->count();
+        
+        if ($user) {
+            // Calculate remaining attempts for logged-in user
+            $searchCount = DB::table('search_logs')
+                ->where('user_id', $user->id)
+                ->whereDate('created_at', Carbon::today())
+                ->count();
 
-        $remaining = max(0, 10 - $searchCount);
+            $remaining = max(0, 10 - $searchCount);
+        } else {
+            // Guests get 0 remaining attempts by default (or whatever fallback you prefer)
+            $remaining = 0;
+        }
 
         return view('clubs.committee', compact('club', 'committee', 'president', 'remaining'));
     }
@@ -131,23 +138,23 @@ class CommitteeController extends Controller
         return redirect()->route('committee.index', ['club' => $club->id])
                          ->with('success', 'Member removed successfully!');
     }
-public function updateBackground(Request $request, Club $club)
-{
-    $request->validate([
-        'background' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-    ]);
 
-    $path = $request->file('background')->store('committee_backgrounds', 'public');
+    public function updateBackground(Request $request, Club $club)
+    {
+        $request->validate([
+            'background' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
 
-    // Save into clubs table
-    $club->committee_background = $path;
-    $club->save();
+        $path = $request->file('background')->store('committee_backgrounds', 'public');
 
-    return back()->with('success', 'Background updated successfully!');
-}
+        // Save into clubs table
+        $club->committee_background = $path;
+        $club->save();
 
+        return back()->with('success', 'Background updated successfully!');
+    }
 
- public function updateCommitteeTheme(Request $request, Club $club)
+    public function updateCommitteeTheme(Request $request, Club $club)
     {
         $request->validate([
             'theme' => 'required|string',
