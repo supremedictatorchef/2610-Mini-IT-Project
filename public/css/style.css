@@ -49,6 +49,78 @@ body {
     background: yellow;
 }
 
+.post-card {
+    background-color: grey; 
+    padding: 20px;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-width: 700px;   
+    width: 100%;
+    text-align: center;
+}
+
+
+/* Wrapper keeps arrows and media centered */
+.post-gallery-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  overflow: hidden;
+  margin: 10px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* space between arrows and image */
+}
+
+/* Centers the media itself */
+.post-gallery {
+  display: flex;
+  justify-content: center; /* centers horizontally */
+  align-items: center;     /* centers vertically */
+  width: 100%;
+  min-height: 250px;       /* consistent height */
+}
+
+/* Media styling */
+.media-item img,
+.media-item video {
+  max-height: 220px;
+  border-radius: 8px;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Arrows */
+.scroll-btn {
+  background: #e0245e;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s ease;
+}
+.scroll-btn:hover {
+  background: #c81e4d;
+}
+
+.media-counter {
+  position: relative;
+  top: -12px;
+  font-weight: bold;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.8); /* subtle transparency */
+  padding: 5px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.4);
+}
+
+
+
 header {
     width: 100%;
     background-color: grey;
@@ -169,17 +241,6 @@ footer {
     text-align: center;
     display: block;
     margin: 8px auto;
-}
-
-.post-card {
-    background-color: grey; 
-    padding: 20px;
-    margin: 20px auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    max-width: 700px;   
-    width: 100%;
-    text-align: center;
 }
 
 .post-image {
@@ -835,4 +896,18 @@ footer {
     background-color: #ffffff;  
     border: 1px solid #ddd;     
     color: #333;                 
+}
+
+
+.btn-secondary {
+    background: #ccc;
+    color: #333;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+.btn-secondary:hover {
+    background: #b3b3b3;
 }

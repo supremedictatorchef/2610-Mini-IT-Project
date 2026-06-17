@@ -4,68 +4,74 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Club;
+use App\Models\PostMedia;
 use App\Notifications\ClubNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;   
-use Carbon\Carbon;
 use App\Models\PostComment;
 use App\Events\CommentPosted;
 
 class PostController extends Controller
 {
-   public function index(Club $club)
-{
-    $user = Auth::user();
+    public function index()
+    {
+        $user = Auth::user();
+        $clubIds = $user ? $user->followed_clubs ?? [] : [];
 
-    $clubIds = $user->followed_clubs ?? [];
+        $followedPosts = Post::with(['club', 'media', 'comments.user'])
+            ->withCount(['likes', 'comments'])
+            ->whereIn('club_id', $clubIds)
+            ->latest()
+            ->get();
 
-    $posts = Post::with('club')->withCount('likes')->latest()->get();
+        $otherPosts = Post::with(['club', 'media', 'comments.user'])
+            ->withCount(['likes', 'comments'])
+            ->whereNotIn('club_id', $clubIds)
+            ->latest()
+            ->get();
 
-    $followedPosts = Post::with('club')
-        ->withCount('likes')
-        ->whereIn('club_id', $clubIds)
-        ->latest()
-        ->get();
+        $posts = Post::with(['club', 'media', 'comments.user'])
+            ->withCount(['likes', 'comments'])
+            ->latest()
+            ->get();
 
-    $otherPosts = Post::with('club')
-        ->withCount('likes')
-        ->whereNotIn('club_id', $clubIds)
-        ->latest()
-        ->get();
-
-    return view('welcome', [
-        'clubIds' => $clubIds,
-        'followedPosts' => $followedPosts,
-        'otherPosts' => $otherPosts,
-        'posts' => $posts
-    ]);
-}
-
+        return view('welcome', compact('clubIds', 'followedPosts', 'otherPosts', 'posts'));
+    }
 
     public function create(Club $club)
     {
         return view('posts.create', compact('club'));
     }
 
+    
     public function store(Request $request, Club $club)
     {
+        
         $validated = $request->validate([
             'title'   => 'required|string|max:255',
             'content' => 'required|string',
-            'image'   => 'nullable|image|max:2048',
+            // ✅ Only allow images
+            'media.*' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:51200',
         ]);
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('posts', 'public');
+        $validated['user_id'] = Auth::id();
+        $validated['club_id'] = $club->id; // ✅ ensure club_id is set
+
+        // Create the post
+        $post = Post::create($validated);
+
+        // Handle multiple image uploads
+        if ($request->hasFile('media')) {
+            foreach ($request->file('media') as $file) {
+                $path = $file->store('posts', 'public');
+                $post->media()->create([
+                    'type' => 'image', // always image now
+                    'path' => $path,
+                ]);
+            }
         }
 
-        $validated['user_id'] = Auth::id();
-
-        // Create the post via relationship
-        $post = $club->posts()->create($validated);
-
-        // Notify ALL club members (including sender)
+        // Notify members
         foreach ($club->users as $member) {
             $member->notify(new ClubNotification(
                 $club,
@@ -74,74 +80,83 @@ class PostController extends Controller
             ));
         }
 
-        return redirect()->route('clubs.show', $club->id)
-                         ->with('success', 'Post created and members notified!');
+        return redirect()->route('clubs.show', $club)
+                         ->with('success', 'Post created with images!');
     }
 
     public function show(Post $post)
     {
-        $club = $post->club;
+        $post->load(['club', 'media', 'comments.user']); 
         return view('posts.show', compact('post'));
     }
 
-    // Updated signatures to accept Club context matching web.php nested resource map
     public function edit(Club $club, Post $post)
     {
         return view('posts.edit', compact('club', 'post'));
     }
 
     public function update(Request $request, Club $club, Post $post)
-    {        
+    {
         $validated = $request->validate([
             'title'   => 'required|string|max:255',
             'content' => 'required|string',
-            'image'   => 'nullable|image|max:2048',
+            'media.*' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:10240',
         ]);
-
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('posts', 'public');
-        }
 
         $post->update($validated);
 
-        return redirect()->route('clubs.show', $post->club->id)
+        if ($request->hasFile('media')) {
+            foreach ($request->file('media') as $file) {
+                $path = $file->store('posts', 'public');
+                $post->media()->create([
+                    'type' => 'image', // always image now
+                    'path' => $path,
+                ]);
+            }
+        }
+
+        return redirect()->route('clubs.show', $club->id)
                          ->with('success', 'Post updated successfully!');
     }
 
-    public function destroy(Club $club, Post $post)
-    {   
-        $clubId = $post->club_id;
-
+    public function destroy(Post $post)
+    {
+        $club = $post->club;
         $post->delete();
 
-        return redirect()->route('clubs.show', $clubId)
+        return redirect()->route('clubs.show', $club)
                          ->with('success', 'Post deleted successfully!');
     }
 
     // =========================================================================
     // Public/Interactive Interactions
     // =========================================================================
-   public function like(Post $post)
-{
-    $userId = auth()->id();
+    public function like(Post $post)
+    {
+        $userId = auth()->id();
+        $existing = $post->likes()->where('user_id', $userId)->first();
 
-    $existing = $post->likes()->where('user_id', $userId)->first();
+        if ($existing) {
+            $existing->delete();
+            $liked = false;
+        } else {
+            $post->likes()->create(['user_id' => $userId]);
+            $liked = true;
+        }
 
-    if ($existing) {
-        // Unlike
-        $existing->delete();
-        $liked = false;
-    } else {
-        // Like
-        $post->likes()->create(['user_id' => $userId]);
-        $liked = true;
+        $likesCount = $post->likes()->count();
+        $likedUsers = $post->likes()->pluck('user_id')->toArray();
+
+        $post->update([
+            'likes_count' => $likesCount,
+            'liked_users' => json_encode($likedUsers ?? []),
+        ]);
+
+        return response()->json([
+            'liked' => $liked,
+            'likes_count' => $likesCount,
+        ]);
     }
-
-    return response()->json([
-        'liked' => $liked, // ✅ add this
-        'likes_count' => $post->likes()->count(),
-    ]);
-}
 
     public function comment(Request $request, Post $post)
     {

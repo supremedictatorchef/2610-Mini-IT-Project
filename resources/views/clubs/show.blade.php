@@ -114,35 +114,53 @@
                 <p>{{ $club->description }}</p>
             </section>
 
-            <section class="club-section">
-                <div class="posts-section" style="margin-top:20px; display:block; width:100%;" id="posts-section">
-                    <h2 class="posts-title">Posts</h2>
+            
+            
+ @forelse($club->posts as $post)
+  <div class="post-card">
+    <h3>{{ $post->title }}</h3>
+    <p>{{ $post->content }}</p>
 
-                    @forelse($club->posts as $post)
-                        <div class="post-card">
-                            <h3>{{ $post->title }}</h3>
-                            <p>{{ $post->content }}</p>
+    <div class="post-gallery-wrapper" data-index="0">
+      <button class="scroll-btn left" onclick="changeMedia(this, -1)">←</button>
 
-                            @if($post->image)
-                                <img src="{{ asset('storage/' . $post->image) }}" class="post-image" alt="Post image">
-                            @endif
+      <div class="post-gallery">
+        @foreach($post->media as $media)
+          <div class="media-item" style="display:none;">
+            {{-- ✅ Only images now --}}
+            <img src="{{ asset('storage/' . $media->path) }}" class="post-image" alt="Post image">
+          </div>
+        @endforeach
+      </div>
 
-                            @if($isCommittee)
-                                <div class="mt-2">
-                                    <a href="{{ route('posts.edit', $post->id) }}" class="btn-green">Edit</a>
-                                    <form action="{{ route('posts.destroy', $post->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this post?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn-red">Delete</button>
-                                    </form>
-                                </div>
-                            @endif
-                        </div>
-                    @empty
-                        <p>No posts yet for this club.</p>
-                    @endforelse
-                </div>
-            </section>
+      <button class="scroll-btn right" onclick="changeMedia(this, 1)">→</button>
+    </div>
+
+    <!-- ✅ Counter display -->
+    <div class="media-counter">
+      <span class="current-index">1</span>/<span class="total-count">{{ count($post->media) }}</span>
+    </div>
+
+    @if($isCommittee)
+      <div class="mt-2">
+        <a href="{{ route('posts.edit', [$club->id, $post->id]) }}" class="btn-green">Edit</a>
+        <form action="{{ route('posts.destroy', $post->id) }}" 
+              method="POST" 
+              style="display:inline;" 
+              onsubmit="return confirm('Delete this post?')">
+          @csrf
+          @method('DELETE')
+          <button type="submit" class="btn-red">Delete</button>
+        </form>
+      </div>
+    @endif
+  </div>
+@empty
+  <p>No posts yet for this club.</p>
+@endforelse
+
+
+
 
             <section class="club-section">
                 <div class="club-main">
@@ -421,9 +439,6 @@ document.querySelectorAll('.btn-preview-theme').forEach(btn => {
     });
 });
 
-
-
-
 // 1. Select all matching links
 const links = document.querySelectorAll('.jump-anchor');
 
@@ -445,5 +460,38 @@ function togglePastEvents() {
     const section = document.getElementById('past-events');
     section.style.display = section.style.display === 'none' ? 'block' : 'none';
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".post-gallery-wrapper").forEach(wrapper => {
+    const gallery = wrapper.querySelector(".post-gallery");
+    const items = gallery.querySelectorAll(".media-item");
+    const counter = wrapper.nextElementSibling.querySelector(".current-index");
+    const total = wrapper.nextElementSibling.querySelector(".total-count");
+
+    if (items.length > 0) {
+      items[0].style.display = "block";
+      if (counter) counter.textContent = 1;
+      if (total) total.textContent = items.length;
+    }
+  });
+});
+
+function changeMedia(button, direction) {
+  const wrapper = button.closest(".post-gallery-wrapper");
+  const gallery = wrapper.querySelector(".post-gallery");
+  const items = gallery.querySelectorAll(".media-item");
+  const counter = wrapper.nextElementSibling.querySelector(".current-index");
+  let index = parseInt(wrapper.dataset.index);
+
+  items[index].style.display = "none";
+  index = (index + direction + items.length) % items.length;
+  items[index].style.display = "block";
+  wrapper.dataset.index = index;
+
+  if (counter) counter.textContent = index + 1;
+}
+
+
+
 </script>
 @endpush
