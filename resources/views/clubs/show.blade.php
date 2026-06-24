@@ -115,7 +115,7 @@
             </section>
 
             
-            
+<div class="posts-section" id="posts-section">    
  @forelse($club->posts as $post)
   <div class="post-card">
     <h3>{{ $post->title }}</h3>
@@ -160,7 +160,7 @@
 @empty
   <p>No posts yet for this club.</p>
 @endforelse
-
+</div> 
 
 
 
@@ -363,7 +363,7 @@
             </div>
 
             <!-- Theme preview -->
-            @if(auth()->user()->is_admin)
+            @if($isCommittee)
                 <div id="preview-div">
                     <div id="theme-menu" style="position: relative;">
                         <div>
