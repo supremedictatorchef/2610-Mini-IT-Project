@@ -185,7 +185,7 @@ class ClubController extends Controller
             'profile_picture' => 'nullable|image|max:2048',
             'description' => 'nullable|string',
             'email' => 'nullable|string',
-            'banner' => 'nullable|image',
+            'banner_image' => 'nullable|image',
             'registration_link' => 'nullable|url',
             'registration_open' => 'sometimes',
             'theme' => 'required|string'
@@ -209,15 +209,15 @@ class ClubController extends Controller
 
         if ($user = auth()->user()) {
             $user->notify(new ClubNotification(
-                $club,
-                "Your club {$club->name} has been submitted for review. The admins will review your club and determine if it's official."
+                $clubs,
+                "Your club {$clubs->name} has been submitted for review. The admins will review your club and determine if it's official."
             ));
         }
 
         $admins = User::where('is_admin', true)->get();
         foreach ($admins as $admin) {
             $admin->notify(new ClubNotification(
-                $club,
+                $clubs,
                 "There is a new club to review"
             ));
         }
