@@ -54,6 +54,7 @@ body {
 .event-profile-picture{
     width: 8rem;
     height: 8rem;
+    object-fit: cover;
     border-radius: 50%;
 }
 
@@ -663,6 +664,7 @@ footer {
     width: 100%;
     border-collapse: collapse;
     text-align: center;
+    table-layout: fixed;
 }
 
 .calendar-table th {
@@ -808,6 +810,7 @@ footer {
 .events-table td {
     border: 1px solid #ccc;
     padding: 10px;
+
 }
 
 .events-table th {
@@ -897,7 +900,7 @@ footer {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    margin: 15px 0;
+    margin: 15px auto;
 }
 
 /* Image container */
