@@ -14,10 +14,13 @@ use App\Models\Event;
 
 class PostController extends Controller
 {
-    public function index(Club $clubs)
-    {
-        $user = Auth::user();
-        $clubIds = $user ? $user->followed_clubs ?? [] : [];
+public function index()
+{
+    try {
+        // Temporary fallback: empty array if user not logged in
+        $clubIds = auth()->check()
+            ? auth()->user()->clubs()->pluck('id')->toArray()
+            : [];
 
         $followedPosts = Post::with(['club', 'media', 'comments.user'])
             ->withCount(['likes', 'comments'])
@@ -28,27 +31,22 @@ class PostController extends Controller
         $followedClubs = Club::whereIn('id', $clubIds)
             ->with(['posts', 'events'])
             ->get();
-    
+
         $otherPosts = Post::with(['club', 'media', 'comments.user'])
             ->withCount(['likes', 'comments'])
             ->whereNotIn('club_id', $clubIds)
             ->latest()
             ->get();
-
-        $posts = Post::with(['club', 'media', 'comments.user'])
-            ->withCount(['likes', 'comments'])
-            ->latest()
-            ->get();
-
-        $events = $followedClubs->pluck('events')->flatten();
-         
-         $otherEvents = Event::all()
-         ->whereNotIn('club_id', $clubIds);
-
-        $allEvents = Event::all();
-
-        return view('welcome', compact('clubIds', 'followedPosts', 'otherPosts', 'posts', 'events','otherEvents', 'allEvents'));
+    } catch (\Exception $e) {
+        // Fallback: no posts if DB fails
+        $followedPosts = collect();
+        $followedClubs = collect();
+        $otherPosts = collect();
     }
+
+    return view('welcome', compact('followedPosts', 'followedClubs', 'otherPosts'));
+}
+
 
     public function create(Club $club)
     {
