@@ -7,7 +7,10 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libpq-dev \
     ca-certificates \
-    && docker-php-ext-install pdo pdo_mysql pdo_pgsql zip
+    curl \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql zip \
+    && curl https://cacerts.digicert.com/DigiCertGlobalRootCA.crt.pem -o /usr/local/share/ca-certificates/DigiCertGlobalRootCA.crt.pem \
+    && update-ca-certificates
 
 # Copy project files
 COPY . /var/www/html
@@ -25,6 +28,9 @@ RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/lo
 
 # Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
+
+# Clear Laravel caches during build (since you don’t have Render shell)
+RUN php artisan config:clear && php artisan cache:clear && php artisan route:clear && php artisan view:clear || true
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
