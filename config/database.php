@@ -84,7 +84,7 @@ return [
             ]) : [],
         ],
 
-    'pgsql' => [
+  'pgsql' => [
     'driver'   => 'pgsql',
     'host'     => env('DB_HOST', '127.0.0.1'),
     'port'     => env('DB_PORT', '5432'),
@@ -96,7 +96,12 @@ return [
     'schema'   => 'public',
     'sslmode'  => env('DB_SSLMODE', 'require'),
     'options'  => [
-        'sslrootcert' => '/etc/ssl/certs/DigiCertGlobalRootCA.pem',
+        'dsn' => sprintf(
+            'pgsql:host=%s;port=%s;dbname=%s;sslmode=require;sslrootcert=/etc/ssl/certs/DigiCertGlobalRootCA.pem',
+            env('DB_HOST'),
+            env('DB_PORT'),
+            env('DB_DATABASE')
+        ),
     ],
 ],
 
