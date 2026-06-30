@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Club;
 use App\Enums\ClubCategory;
+use App\Models\Event;
 use Carbon\Carbon;
 
 class ClubsTableSeeder extends Seeder
@@ -184,5 +185,7 @@ class ClubsTableSeeder extends Seeder
                 'is_Verified' => true,
             ],
         ]);
+
+        Event::factory()->count(5)->create();
     }
 }

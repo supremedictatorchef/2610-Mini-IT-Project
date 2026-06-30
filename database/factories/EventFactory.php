@@ -2,23 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\User;
-use App\Enums\UserStatus;
-use App\Enums\UserVerification;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use App\Models\Club;
 
-/**
- * @extends Factory<User>
- */
-class UserFactory extends Factory
+class EventFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
-
     /**
      * Define the model's default state.
      *
@@ -27,35 +15,23 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'title'       => fake()->sentence(4), // Generates a 4-word title
+            'description' => fake()->optional()->paragraph(), // 1in5 chance of being null, otherwise text
+            'date'        => fake()->dateTimeBetween('now', '+6 months')->format('Y-m-d'), // Format for date column
+            'time'        => fake()->time('H:i'), // Format like "14:30"
+            'location'    => fake()->optional()->address(), // Generates a mock address string
+            
+            // Simulates a tiny, mock JSON array of file paths
+            'uploads'     => fake()->optional()->randomElement([
+                json_encode(['images/event1.jpg', 'docs/agenda.pdf']),
+                json_encode(['images/poster.png']),
+                null
+            ]),
 
-            'is_admin' => false, // Default to regular user
-            'status' => UserStatus::ACTIVE->value,
-            'verification' => UserVerification::VERIFIED->value,
+            // Dynamically assigns a random existing club ID
+            'club_id'     => Club::inRandomOrder()->first()?->id ?? Club::factory(),
+            
+            'deleted_at'  => null, // Keeps it active by default
         ];
-    }
-
-    /**
-     * Helper to quickly create an admin user
-     */
-    public function admin(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'is_admin' => true,
-        ]);
-    }
-
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
     }
 }
