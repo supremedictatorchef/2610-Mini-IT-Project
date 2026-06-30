@@ -53,7 +53,7 @@ public function index()
 
         return view('welcome', compact('clubIds', 'followedPosts', 'otherPosts', 'posts', 'events','otherEvents', 'allEvents'));
     }
-
+}
     public function create(Club $club)
     {
         return view('posts.create', compact('club'));
