@@ -8,18 +8,12 @@
         \App\Enums\ClubRole::HICOM->value,
         \App\Enums\ClubRole::SUBCOM->value,
     ];
-
-    $manageThemes = [
-        \App\Enums\ClubRole::PRESIDENT->value,
-        \App\Enums\ClubRole::HICOM->value,
-    ];
     
     $deleteClub = [
         \App\Enums\ClubRole::PRESIDENT->value,
     ];
 
     $isPresident = $membership && in_array(strtolower($membership->pivot->role), $deleteClub);
-    $ishighmember = $membership && in_array(strtolower($membership->pivot->role), $manageThemes);
     $isCommittee = $membership && in_array(strtolower($membership->pivot->role), $managementRoles);
 
     $themes = config('themes');
@@ -66,28 +60,23 @@
          <h1 style="flex:1; text-align:center; margin:0; color:var(--text);">{{ $club->name }}</h1>
         <p class="club-description">{{ $club->description }}</p>
 
-        @php
-            $isPresident = auth()->check() && auth()->user()->role === \App\Enums\ClubRole::PRESIDENT->value;
-        @endphp
-
         @if($isCommittee)
             <div class="club-actions-toolbar">
                 <a href="{{ route('posts.create', $club->id) }}" class="btn-blue">Create Post</a>
                 <a href="{{ route('events.create', ['club' => $club->id]) }}" class="btn-green">Add Event</a>
                 <a href="{{ route('clubs.edit', $club->id) }}" class="btn-yellow">Edit Club</a>
+            
+                @if($isPresident)
+                    <form action="{{ route('clubs.destroy', $club->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this club?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-red">Delete Club</button>
+                    </form>
+                @endif
             </div>
         @endif
-
-        @auth
-            @if(auth()->user()->is_admin || $isPresident)
-                <form action="{{ route('clubs.destroy', $club->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this club?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn-red">Delete Club</button>
-                </form>
-            @endif
-        @endauth
     </div>
+
         <div class="follow-section" style="flex:1; text-align:right; position: absolute; right:2rem; align-self:start;">
             @auth
                 @if(in_array($club->id, auth()->user()->followed_clubs ?? []))
@@ -477,7 +466,7 @@ function togglePastEvents() {
 
 // ✅ Image carousel setup
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".post-card").forEach(card => {
+document.querySelectorAll(".post-card").forEach(card => {
     const wrapper = card.querySelector(".post-gallery-wrapper");
     if (!wrapper) return;
 
@@ -488,14 +477,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let index = 0;
 
     if (items.length > 0) {
-      items.forEach((item, i) => item.style.display = i === 0 ? "block" : "none");
-      if (counter) counter.textContent = 1;
-      if (total) total.textContent = items.length;
-      wrapper.dataset.index = 0;
+    items.forEach((item, i) => item.style.display = i === 0 ? "block" : "none");
+    if (counter) counter.textContent = 1;
+    if (total) total.textContent = items.length;
+    wrapper.dataset.index = 0;
     }
 
     wrapper.querySelectorAll(".scroll-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
+    btn.addEventListener("click", () => {
         const direction = btn.classList.contains("left") ? -1 : 1;
 
         // Hide current image
@@ -512,9 +501,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Save index in dataset
         wrapper.dataset.index = index;
-      });
     });
-  });
+    });
+});
 });
 </script>
 @endpush
