@@ -24,8 +24,8 @@
 
         <!-- Email Address -->
         <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" class="auth-lbl" />
-            <x-text-input class="auth-input" id="email" type="email" name="email" :value="old('email')" required autocomplete="username" />
+            <x-input-label for="email" :value="__('Student Email')" class="auth-lbl" />
+            <x-text-input class="auth-input" id="email" type="email" name="email" :value="old('email')" placeholder="timothylee@student.mmu.edu.my" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-register" />
         </div>
 

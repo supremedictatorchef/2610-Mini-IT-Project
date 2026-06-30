@@ -32,8 +32,20 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => [
+                'required', 
+                'string', 
+                'lowercase', 
+                'email', 
+                'max:255', 
+                'unique:'.User::class,
+                'ends_with:@student.mmu.edu.my',
+            ],
+
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            // Custom error message for domain failure
+            'email.ends_with' => ('Only student emails are allowed. Alumni, please use the alumni registration.'),
         ]);
 
         $user = User::create([
