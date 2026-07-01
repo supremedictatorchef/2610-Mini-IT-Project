@@ -45,7 +45,7 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ], [
             // Custom error message for domain failure
-            'email.ends_with' => ('Only student emails are allowed. Alumni, please use the alumni registration.'),
+            'email.ends_with' => ('Only student emails are allowed.'),
         ]);
 
         $user = User::create([
