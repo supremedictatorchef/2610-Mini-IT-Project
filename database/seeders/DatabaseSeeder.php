@@ -138,12 +138,15 @@ class DatabaseSeeder extends Seeder
         // =======================================================
         // 5. POST GENERATION
         // =======================================================
-        
+        $randomIds = fake()->randomElements(range(1, 50), fake()->numberBetween(1, 15));
+
         Post::create([
             'club_id' => $club->id,
             'user_id' => $committeeLead->id,
             'title' => 'Welcome to MMusic Club!',
             'content' => 'This is our first official post.',
         ]);
+
+        \App\Models\Post::factory()->count(5)->create();
     }
 }

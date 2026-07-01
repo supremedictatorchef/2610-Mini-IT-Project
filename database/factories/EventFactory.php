@@ -14,8 +14,8 @@ class EventFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            'title'       => fake()->sentence(4), // Generates a 4-word title
+        return [ 
+            'title' => ucwords(fake()->bs()), // Generates catchy, buzzword-heavy titles
             'description' => fake()->optional()->paragraph(), // 1in5 chance of being null, otherwise text
             'date'        => fake()->dateTimeBetween('now', '+6 months')->format('Y-m-d'), // Format for date column
             'time'        => fake()->time('H:i'), // Format like "14:30"
