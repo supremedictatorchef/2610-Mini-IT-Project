@@ -31,6 +31,22 @@ class Post extends Model
 
     protected $appends = ['likedByUser'];
 
+    public function getLikedByUserAttribute(): bool
+    {
+        $userId = auth()->id();
+        
+        if (!$userId) {
+            return false;
+        }
+
+        // Read directly from the JSON array instead of the relationship table
+        $likedUsers = is_string($this->liked_users) 
+            ? json_decode($this->liked_users, true) 
+            : ($this->liked_users ?? []);
+
+        return in_array($userId, $likedUsers);
+    }
+
     public function club()
     {
         return $this->belongsTo(Club::class);
@@ -41,12 +57,7 @@ class Post extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getLikedByUserAttribute()
-    {
-        return auth()->check()
-            ? $this->likes()->where('user_id', auth()->id())->exists()
-            : false;
-    }
+    
 
     public function likes()
     {

@@ -20,7 +20,6 @@ class PostController extends Controller
         $clubIds = $user ? $user->followed_clubs ?? [] : [];
 
         $followedPosts = Post::with(['club', 'media', 'comments.user'])
-            ->withCount(['likes', 'comments'])
             ->whereIn('club_id', $clubIds)
             ->latest()
             ->get();
@@ -30,13 +29,11 @@ class PostController extends Controller
             ->get();
     
         $otherPosts = Post::with(['club', 'media', 'comments.user'])
-            ->withCount(['likes', 'comments'])
             ->whereNotIn('club_id', $clubIds)
             ->latest()
             ->get();
 
         $posts = Post::with(['club', 'media', 'comments.user'])
-            ->withCount(['likes', 'comments'])
             ->latest()
             ->get();
 
@@ -146,22 +143,30 @@ class PostController extends Controller
     public function like(Post $post)
     {
         $userId = auth()->id();
-        $existing = $post->likes()->where('user_id', $userId)->first();
+        
+        // 1. Get the current array of user IDs (ensures it fallback to an empty array if null)
+        $likedUsers = is_string($post->liked_users) 
+            ? json_decode($post->liked_users, true) 
+            : ($post->liked_users ?? []);
 
-        if ($existing) {
-            $existing->delete();
+        // 2. Check if the authenticated user has already liked this post
+        if (in_array($userId, $likedUsers)) {
+            // Unlike: Remove the current user ID from the array
+            $likedUsers = array_values(array_diff($likedUsers, [$userId]));
             $liked = false;
         } else {
-            $post->likes()->create(['user_id' => $userId]);
+            // Like: Add the current user ID to the array
+            $likedUsers[] = $userId;
             $liked = true;
         }
 
-        $likesCount = $post->likes()->count();
-        $likedUsers = $post->likes()->pluck('user_id')->toArray();
+        // 3. Keep your counter variable in sync with the array length
+        $likesCount = count($likedUsers);
 
+        // 4. Persist the updated data directly back to the post attributes
         $post->update([
             'likes_count' => $likesCount,
-            'liked_users' => json_encode($likedUsers ?? []),
+            'liked_users' => json_encode($likedUsers), // Encodes cleanly back to database string format
         ]);
 
         return response()->json([
