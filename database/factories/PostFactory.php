@@ -15,41 +15,41 @@ class PostFactory extends Factory
      */
     public function definition(): array
     {
-        // 1. Generate a completely random array of user IDs first (between 0 and 25 users)
-        $likedUsers = fake()->optional(0.8, [])->randomElements(
-            range(1, 50), 
-            fake()->numberBetween(0, 25)
-        );
-
-        // 2. Set the count based on how many users are ACTUALLY in that array
+        // Generate a random likes configuration
+        $likedUsers = fake()->optional(0.8, [])->randomElements(range(1, 50), fake()->numberBetween(0, 25));
         $likesCount = count($likedUsers);
 
-        // 3. Do the exact same thing for comments to keep it safe
+        // Pick a random number for how many comments this post should get
         $commentsCount = fake()->numberBetween(0, 5);
-        $comments = [];
-        for ($i = 0; $i < $commentsCount; $i++) {
-            $comments[] = [
-                'user_id'    => fake()->numberBetween(1, 50),
-                'comment'    => fake()->sentence(),
-                'created_at' => fake()->dateTimeThisMonth()->format('Y-m-d H:i:s'),
-            ];
-        }
 
         return [
-            'club_id'        => Club::inRandomOrder()->first()?->id ?? Club::factory(),
-            'user_id'        => User::inRandomOrder()->first()?->id ?? User::factory(),
-            
-            
-            // Generates real English phrases between 15 and 40 characters long
-            'title' => rtrim(fake()->realTextBetween(15, 40), '.'), // rtrim removes the trailing period
-            // 🇬🇧 Generates clean, cohesive paragraphs of actual English book text
+            'club_id'        => \App\Models\Club::inRandomOrder()->first()?->id ?? \App\Models\Club::factory(),
+            'user_id'        => \App\Models\User::inRandomOrder()->first()?->id ?? \App\Models\User::factory(),
+            'title'          => rtrim(fake()->realTextBetween(15, 40), '.'), 
             'content'        => fake()->realTextBetween(50, 200), 
-            
             'image'          => fake()->optional(0.7)->imageUrl(640, 480, 'posts', true),
+            
             'likes_count'    => $likesCount,
-            'comments_count' => $commentsCount,
             'liked_users'    => $likedUsers, 
-            'comments'       => $comments,
+            
+            // Save the count directly so your column matches perfectly
+            'comments_count' => $commentsCount, 
         ];
+    }
+
+    /**
+     * Configure the model factory hooks.
+     */
+    public function configure()
+    {
+        return $this->afterCreating(function (\App\Models\Post $post) {
+            // Look at the random count we generated for this post row
+            if ($post->comments_count > 0) {
+                // Create real database rows linked directly to this post!
+                \App\Models\PostComment::factory()
+                    ->count($post->comments_count)
+                    ->create(['post_id' => $post->id]);
+            }
+        });
     }
 }
