@@ -172,7 +172,7 @@
     <h2 class="settings-h2">Your Events</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @forelse($events as $event)
-                        <div class="event-card-white">
+                        <div class="event-card-white" style="margin-bottom: 2rem;">
                             <img src="{{ asset($event->club->profile_picture) }}" class="event-profile-picture" alt="{{ $event->club->name }}">
                             <div class="event-card-text">
                             <h3 class="text-xl font-bold">{{ $event->title }}</h3>
@@ -193,7 +193,7 @@
     <h2 class="settings-h2">Other Events</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @forelse($otherEvents as $event)
-                        <div class="event-card-white">
+                        <div class="event-card-white" style="margin-bottom: 2rem;">
                             <img src="{{ asset($event->club->profile_picture) }}" class="event-profile-picture" alt="{{ $event->club->name }}">
                             <div class="event-card-text">
                             <h3 class="text-xl font-bold">{{ $event->title }}</h3>
@@ -214,7 +214,7 @@
     <h2 class="settings-h2">Latest Events</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @forelse($allEvents as $event)
-                        <div class="event-card-white">
+                        <div class="event-card-white" style="margin-bottom: 2rem;">
                             <img src="{{ asset($event->club->profile_picture) }}" class="event-profile-picture" alt="{{ $event->club->name }}">
                             <div class="event-card-text">
                             <h3 class="text-xl font-bold">{{ $event->title }}</h3>

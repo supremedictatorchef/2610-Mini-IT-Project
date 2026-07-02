@@ -45,6 +45,7 @@ body {
     padding: 1rem;
     text-align: center;
     align-items: center;
+    max-width: 25rem;
 }
 
 .event-card-text{
